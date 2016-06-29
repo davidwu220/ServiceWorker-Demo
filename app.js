@@ -69,17 +69,15 @@ function refreshTodos() {
 // registers the serviceworker with the browser.
 function registerSW(sw_path) {
 	if (navigator.serviceWorker) {
-		console.log("This browser supports service workers, beginning registration");
-		console.log(navigator.serviceworker.controller);
+		console.log("This browser supports service workers");
 		if (navigator.serviceWorker.controller) {
 			// don't register if something's already controlling it
-			console.log(navigator.serviceWorker.controller.scriptURL, '(onload)', 'controller');
-			console.log("service worker already active");
+			console.log(navigator.serviceWorker.controller.scriptURL, 'serviceworker already active');
 		} else {
 			// register sw
 			navigator.serviceWorker.register(sw_path, {scope : "./"}).then(
 				function(reg){
-					console.log(reg.scope, "registered");
+					console.log(reg.scope, "registration complete");
 				}
 			).catch(
 				function(error) {
@@ -89,6 +87,6 @@ function registerSW(sw_path) {
 		}
 	} else {
 		// TODO: appcache fallback
-		console.log("browser doesn't support service workers");
+		console.log("This browser doesn't support service workers");
 	}
 }
