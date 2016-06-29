@@ -71,7 +71,7 @@ function installSW() {
 	if (navigator.serviceWorker) {
 		console.log("browser supports service workers");
 		if (navigator.serviceWorker.controller) {
-			console.log(navigator.serviceWorker.controller.scriptURL + ' (onload)', 'controller');
+			console.log(navigator.serviceWorker.controller.scriptURL, '(onload)', 'controller');
 			console.log("service worker already active");
 		} else {
 			navigator.serviceWorker.register("sw.js", {scope : "./"}).then(
