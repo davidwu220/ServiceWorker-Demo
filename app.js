@@ -62,3 +62,27 @@ function refreshTodos() {
 		}
 	});
 }
+
+// registers the serviceworker with the browser.
+function installSW() {
+	if (navigator.serviceWorker) {
+		console.log("browser supports service workers");
+		if (navigator.serviceWorker.controller) {
+			console.log(navigator.serviceWorker.controller.scriptURL, '(onload)', 'controller');
+			console.log("service worker already active");
+		} else {
+			navigator.serviceWorker.register("sw.js", {scope : "./"}).then(
+				function(reg){
+					console.log(reg.scope, "registered");
+				}
+			).catch(
+				function(error) {
+					console.log(error);
+				}
+			)
+		}
+	} else {
+		// TODO: appcache fallback
+		console.log("browser doesn't support service workers");
+	}
+}
