@@ -2,7 +2,7 @@ window.onload = function() {
 	// Open connection to the database
 	todoDB.open(refreshTodos);
 	
-	// Tell browser to use this script for the serviceWorker
+	// Tell browser to start up serviceWorker
 	registerSW("sw.js");
 
 	var newTodoForm = document.getElementById('new-todo-form');
@@ -69,7 +69,7 @@ function refreshTodos() {
 // registers the serviceworker with the browser.
 function registerSW(sw_path) {
 	if (navigator.serviceWorker) {
-		console.log("This browser supports service workers");
+		console.log("[app] this browser supports service workers");
 		if (navigator.serviceWorker.controller) {
 			// don't register if something's already controlling it
 			console.log(navigator.serviceWorker.controller.scriptURL, 'serviceworker already active');
@@ -87,6 +87,6 @@ function registerSW(sw_path) {
 		}
 	} else {
 		// TODO: appcache fallback
-		console.log("This browser doesn't support service workers");
+		console.log("[app] this browser doesn't support service workers");
 	}
 }
