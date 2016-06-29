@@ -1,6 +1,9 @@
 window.onload = function() {
 	// Open connection to the database
 	todoDB.open(refreshTodos);
+	
+	// Tell browser to use this script for the serviceWorker
+	installSW();
 
 	var newTodoForm = document.getElementById('new-todo-form');
 	var newTodoInput = document.getElementById('new-todo');
@@ -68,9 +71,11 @@ function installSW() {
 	if (navigator.serviceWorker) {
 		console.log("browser supports service workers");
 		if (navigator.serviceWorker.controller) {
+			// don't register if something's already controlling it
 			console.log(navigator.serviceWorker.controller.scriptURL, '(onload)', 'controller');
 			console.log("service worker already active");
 		} else {
+			// register sw
 			navigator.serviceWorker.register("sw.js", {scope : "./"}).then(
 				function(reg){
 					console.log(reg.scope, "registered");
