@@ -1,4 +1,4 @@
-var CACHE_NAME = 'cachetest_v1';
+var CACHENAME = 'testcache';
 var cacheResources = [
 	'sad.jpg'
 ];
@@ -6,7 +6,7 @@ var cacheResources = [
 self.addEventListener('install', function(event) {
 	console.log('[registerSW] Installing Service Worker...');
 	event.waitUntil(
-		caches.open(CACHE_NAME).then(function(cache) {
+		caches.open(CACHENAME).then(function(cache) {
 			console.log("[install] Caching all resources.");
 			return cache.addAll(cacheResources);
 		}).then(function() {
@@ -38,7 +38,7 @@ self.addEventListener('fetch', function(event) {
 				var responseToCache = response.clone();
 
 				// put in new cache if the request does not match with any cache
-				caches.open(CACHE_NAME).then(function(cache) {
+				caches.open(CACHENAME).then(function(cache) {
 					console.log("[fetch] No matching cache, fetching new cache.", event.request.url);
 					cache.put(event.request, responseToCache);
 				});
