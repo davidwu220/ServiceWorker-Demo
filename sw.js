@@ -1,39 +1,64 @@
-var CACHENAME = "testcache";
+var CACHE_NAME = 'cachetest_v1';
 var cacheResources = [
-	"index.html",
-	"style.css",
-	"app.js",
-	"db.js",
-	"favicon.ico"
-]
+	'sad.jpg'
+];
 
-self.addEventListener("install", function(event) {
+self.addEventListener('install', function(event) {
+	console.log('[registerSW] Installing Service Worker...');
 	event.waitUntil(
-		caches.open(CACHENAME).then(function(cache) {
-			console.log("[install] saving resources to cache");
+		caches.open(CACHE_NAME).then(function(cache) {
+			console.log("[install] Caching all resources.");
 			return cache.addAll(cacheResources);
 		}).then(function() {
-			console.log("[install] cached all resources");
+			console.log('[install] Cached all resources.', cacheResources);
 			return self.skipWaiting();
 		})
 	);
 });
 
-self.addEventListener("fetch", function(event){
+// Cache files that were not successfully fetched from cache and fetched from the server
+self.addEventListener('fetch', function(event) {
 	event.respondWith(
-		caches.match(event.request).then(function(response) {
-			if (response) {
-				console.log("[fetch] responding using serviceworker cache", event.request.url);
-				return response;
+		caches.match(event.request).then(function(resp) {
+			// Cache hit - return response
+			if(resp) {
+				console.log("[fetch] Cache hit, return response.", resp);
+				return resp;
 			}
 			
-			console.log("[fetch] responding using network", event.request.url);
-			return fetch(event.request);
+			var fetchRequest = event.request.clone();
+
+			return fetch(fetchRequest).then(function(response) {
+				// return any invalid response
+				if(!response || response.status !== 200 || response.type !== 'basic') {
+					console.log("[fetch] Invalid response received.", response);
+					return response;
+				}
+
+				var responseToCache = response.clone();
+
+				// put in new cache if the request does not match with any cache
+				caches.open(CACHE_NAME).then(function(cache) {
+					console.log("[fetch] No matching cache, fetching new cache.", event.request.url);
+					cache.put(event.request, responseToCache);
+				});
+				return response;
+			});
+		}).catch(function() {
+			// Return something if matching failed and there's no internet connection
+			console.log("[fetch] No matching, and the connection is off-line.");
+			return caches.match('sad.jpg');
 		})
 	);
 });
 
 self.addEventListener("activate", function(event) {
-	console.log("[activate] claiming serviceworker from old script");
+	console.log("[activate] Claiming service worker from old script");
 	event.waitUntil(self.clients.claim());
 });
+
+// self.addEventListener('push', function(event) {
+// 	console.log('[push] Push message received', event);
+
+// 	//TODO
+// });

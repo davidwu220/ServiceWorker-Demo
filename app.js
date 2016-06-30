@@ -1,5 +1,4 @@
-// Tell browser to start up serviceWorker
-registerSW("sw.js");
+registerSW('sw.js');
 
 window.onload = function() {
 	// Open connection to the database
@@ -66,27 +65,19 @@ function refreshTodos() {
 	});
 }
 
-// registers the serviceworker with the browser.
 function registerSW(sw_path) {
-	if (navigator.serviceWorker) {
-		console.log("[app] this browser supports service workers");
-		if (navigator.serviceWorker.controller) {
-			// don't register if something's already controlling it
-			console.log(navigator.serviceWorker.controller.scriptURL, 'serviceworker already active');
+	if(navigator.serviceWorker) {
+		console.log('[registerSW] This browser supports service worker.');
+		if(navigator.serviceWorker.controller) {
+			console.log('[registerSW] Service worker is active already.');
 		} else {
-			// register sw
-			navigator.serviceWorker.register(sw_path, {scope : "./"}).then(
-				function(reg){
-					console.log(reg.scope, "registration complete");
-				}
-			).catch(
-				function(error) {
-					console.log(error);
-				}
-			)
+			navigator.serviceWorker.register(sw_path, {scope : './'}).then(function(reg) {
+				console.log('[registerSW] Registration complete.', reg.scope);
+			}).catch(function(error) {
+				console.log('[registerSW] There\'s and error while registering.', error);
+			});
 		}
 	} else {
-		// TODO: appcache fallback
-		console.log("[app] this browser doesn't support service workers");
+		console.log('[registerSW] This browser does not support service worker.');
 	}
 }
