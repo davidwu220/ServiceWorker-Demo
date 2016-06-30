@@ -34,6 +34,6 @@ self.addEventListener("fetch", function(event){
 });
 
 self.addEventListener("activate", function(event) {
-	console.log("[activate] claiming serviceworker from old script");
+	console.log("[activate] claiming serviceworker");
 	event.waitUntil(self.clients.claim());
 });

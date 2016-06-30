@@ -72,16 +72,16 @@ function registerSW(sw_path) {
 		console.log("[app] this browser supports service workers");
 		if (navigator.serviceWorker.controller) {
 			// don't register if something's already controlling it
-			console.log(navigator.serviceWorker.controller.scriptURL, 'serviceworker already active');
+			console.log("[app]", navigator.serviceWorker.controller.scriptURL, 'serviceworker already active');
 		} else {
 			// register sw
 			navigator.serviceWorker.register(sw_path, {scope : "./"}).then(
 				function(reg){
-					console.log(reg.scope, "registration complete");
+					console.log("[app]", reg.scope, "registration complete");
 				}
 			).catch(
 				function(error) {
-					console.log(error);
+					console.log("[app]",error);
 				}
 			)
 		}
