@@ -1,21 +1,23 @@
 var CACHENAME = "testcache";
 var cacheResources = ["index.html", "/", "style.css", "app.js", "db.js", "sw.js"];
 
-self.addEventListener("install", function (event) {
+self.addEventListener("install", function(event) {
 	console.log("[install] saving resources to cache");
-	event.waitUntil(caches.open(CACHENAME).then(function (cache) {
-		return cache.addAll(cacheResources);
-	}).then(function () {
-		console.log("[install] cached all resources");
-		return self.skipWaiting();
-	}));
+	event.waitUntil(caches.open(CACHENAME)
+		.then(function(cache) {
+			return cache.addAll(cacheResources);
+		})
+		.then(function() {
+			console.log("[install] cached all resources");
+			return self.skipWaiting();
+		}));
 });
 
 // override fetch()'s default behavior to look in the cache first
 var nocacheHeaders = new Headers();
 nocacheHeaders.append("pragma", "no-cache");
 nocacheHeaders.append("cache-control", "no-cache");
-self.addEventListener("fetch", function (event) {
+self.addEventListener("fetch", function(event) {
 	var request = event.request;
 	if (request.method === "GET") {
 		event.respondWith(
@@ -25,14 +27,17 @@ self.addEventListener("fetch", function (event) {
 				mode: "same-origin",
 				credentials: request.credentials,
 				redirect: "manual"
-			}).then(function (response) {
+			})
+			.then(function(response) {
 				console.log("pulling", response, "from network");
 				return response;
-			}).catch(function (error) {
+			})
+			.catch(function(error) {
 				return caches.open(CACHENAME)
-					.then(function (cache) {
+					.then(function(cache) {
 						return cache.match(request);
-					}).then(function (response) {
+					})
+					.then(function(response) {
 						console.log("pulling", response, "from cache");
 						return response;
 					});
@@ -41,7 +46,7 @@ self.addEventListener("fetch", function (event) {
 	}
 });
 
-self.addEventListener("activate", function (event) {
+self.addEventListener("activate", function(event) {
 	console.log("[activate] claiming serviceworker");
 	event.waitUntil(self.clients.claim());
 });

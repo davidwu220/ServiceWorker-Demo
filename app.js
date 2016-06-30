@@ -75,18 +75,17 @@ function registerSW(sw_path) {
 			console.log("[app]", navigator.serviceWorker.controller.scriptURL, 'serviceworker already active');
 		} else {
 			// register sw
-			navigator.serviceWorker.register(sw_path, {scope : "./"}).then(
-				function(reg){
+			navigator.serviceWorker.register(sw_path)
+				.then(function(reg) {
 					console.log("[app]", reg.scope, "registration complete");
-				}
-			).catch(
-				function(error) {
-					console.log("[app]",error);
-				}
-			)
+				})
+				.catch(function(error) {
+					console.log("[app]", error);
+				})
 		}
 	} else {
 		// TODO: appcache fallback
 		console.log("[app] this browser doesn't support service workers");
 	}
 }
+
