@@ -52,10 +52,10 @@ self.addEventListener('fetch', function(event) {
 	);
 });
 
-self.addEventListener("activate", function(event) {
-	console.log("[activate] Claiming service worker from old script");
-	event.waitUntil(self.clients.claim());
-});
+// self.addEventListener("activate", function(event) {
+// 	console.log("[activate] Claiming service worker from old script");
+// 	event.waitUntil(self.clients.claim());
+// });
 
 // self.addEventListener('push', function(event) {
 // 	console.log('[push] Push message received', event);

@@ -73,6 +73,8 @@ function registerSW(sw_path) {
 		} else {
 			navigator.serviceWorker.register(sw_path, {scope : './'}).then(function(reg) {
 				console.log('[registerSW] Registration complete.', reg.scope);
+				console.log('[registerSW] Reloading the page...', reg.scope);
+				window.location.reload(true); 
 			}).catch(function(error) {
 				console.log('[registerSW] There\'s and error while registering.', error);
 			});
