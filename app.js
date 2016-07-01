@@ -1,4 +1,4 @@
-registerSW('sw.js');
+// registerSW('sw.js');
 
 window.onload = function() {
 	// Open connection to the database
