@@ -1,28 +1,9 @@
-registerSW('sw.js');
-
-function registerSW(sw_path) {
-	if(navigator.serviceWorker) {
-		console.log('[registerSW] This browser supports service worker.');
-		if(navigator.serviceWorker.controller) {
-			console.log('[registerSW] Service worker is active already.');
-		} else {
-			navigator.serviceWorker.register(sw_path, {scope : './'}).then(function(reg) {
-				console.log('[registerSW] Registration complete.', reg.scope);
-				console.log('[registerSW] Reloading the page...');
-				location.reload();
-			}).catch(function(error) {
-				console.log('[registerSW] There\'s and error while registering.', error);
-			});
-		}
-	} else {
-		console.log('[registerSW] This browser does not support service worker.');
-	}
-}
-
 var CACHENAME = 'testcache';
+var UNAVAILABLE_FILE = "sad.jpg";
 var cacheResources = [
-	'sad.jpg'
+	UNAVAILABLE_FILE
 ];
+
 
 self.addEventListener('install', function(event) {
 	console.log('[install] Installing Service Worker...');
@@ -74,38 +55,53 @@ self.addEventListener('install', function(event) {
 	// event.waitUntil(self.clients.claim());
 // });
 
+// override fetch()'s default behavior to look in the cache first
+var nocacheHeaders = new Headers();
+nocacheHeaders.append("pragma", "no-cache");
+nocacheHeaders.append("cache-control", "no-cache");
+
+function promiseFromCache(request){
+
+}
+
 // Cache files that were not successfully fetched from cache and fetched from the server
-self.addEventListener('fetch', function(event) {
+self.addEventListener('fetch', function(event) {	
+	var request = event.request;
 	event.respondWith(
-		caches.match(event.request).then(function(resp) {
-			// Cache hit - return response
-			if(resp) {
-				console.log("[fetch] Cache hit, return response.", resp);
-				return resp;
+		fetch(request.url, {
+			method: request.method,
+			headers: nocacheHeaders,
+			mode: "same-origin",
+			credentials: request.credentials,
+			redirect: "manual"
+		}).then(function(fetchResponse) {
+			console.log("[net]", request.url, fetchResponse.statusText);
+			if (!fetchResponse || !fetchResponse.ok) {
+				throw Error(request);
 			}
-			
-			var fetchRequest = event.request.clone();
-
-			return fetch(fetchRequest).then(function(response) {
-				// return any invalid response
-				if(!response || response.status !== 200 || response.type !== 'basic') {
-					console.log("[fetch] Invalid response received.", response);
-					return response;
+			console.log(fetchResponse.bodyUsed);
+			caches.open(CACHENAME).then(function(cache){
+				cache.match(request).then(function(cacheResponse){
+					if (!cacheResponse) {
+						console.log("[cachePut]", request.url);
+						cache.put(request, fetchResponse.clone());
+					} else {
+						console.log("[cachePut]", request.url, "already cached");
+					}
+				})
+			})
+			return fetchResponse;
+		}).catch(function(error){
+			console.log(error);
+			return caches.open(CACHENAME).then(function(cache) {
+				return cache.match(request);
+			}).then(function(cacheResponse) {
+				if (cacheResponse) {
+					console.log("[cacheMatch]", request.url, cacheResponse.statusText);
+					return cacheResponse;
 				}
-
-				var responseToCache = response.clone();
-
-				// put in new cache if the request does not match with any cache
-				caches.open(CACHENAME).then(function(cache) {
-					console.log("[fetch] No matching cache, fetching new cache.", event.request.url);
-					cache.put(event.request, responseToCache);
-				});
-				return response;
+				return caches.match(UNAVAILABLE_FILE);
 			});
-		}).catch(function() {
-			// Return something if matching failed and there's no internet connection
-			console.log("[fetch] No matching, and the connection is off-line.");
-			return caches.match('sad.jpg');
 		})
 	);
 });
