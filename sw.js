@@ -4,14 +4,11 @@ var cacheResources = [
 ];
 
 self.addEventListener('install', function(event) {
-	console.log('[registerSW] Installing Service Worker...');
+	console.log('[install] Installing Service Worker...');
 	event.waitUntil(
 		caches.open(CACHENAME).then(function(cache) {
 			console.log("[install] Caching all resources.");
 			return cache.addAll(cacheResources);
-		}).then(function() {
-			console.log('[install] Cached all resources.', cacheResources);
-			return self.skipWaiting();
 		})
 	);
 });

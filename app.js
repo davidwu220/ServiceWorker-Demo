@@ -73,12 +73,11 @@ function registerSW(sw_path) {
 		} else {
 			navigator.serviceWorker.register(sw_path, {scope : './'}).then(function(reg) {
 				console.log('[registerSW] Registration complete.', reg.scope);
+				console.log('[registerSW] Reloading the page...');
+				location.reload();
 			}).catch(function(error) {
 				console.log('[registerSW] There\'s and error while registering.', error);
 			});
-			
-			console.log('[registerSW] Reloading the page...');
-			window.location.reload(true); 
 		}
 	} else {
 		console.log('[registerSW] This browser does not support service worker.');
