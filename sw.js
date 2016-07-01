@@ -1,12 +1,10 @@
-registerSW('sw.js');
-
-function registerSW(sw_path) {
+(function() {
 	if(navigator.serviceWorker) {
 		console.log('[registerSW] This browser supports service worker.');
 		if(navigator.serviceWorker.controller) {
 			console.log('[registerSW] Service worker is active already.');
 		} else {
-			navigator.serviceWorker.register(sw_path, {scope : './'}).then(function(reg) {
+			navigator.serviceWorker.register('sw.js', {scope : './'}).then(function(reg) {
 				console.log('[registerSW] Registration complete.', reg.scope);
 				console.log('[registerSW] Reloading the page...');
 				location.reload();
@@ -17,10 +15,12 @@ function registerSW(sw_path) {
 	} else {
 		console.log('[registerSW] This browser does not support service worker.');
 	}
-}
+})();
+	
 
 var CACHENAME = 'testcache';
 var cacheResources = [
+	'./',
 	'sad.jpg'
 ];
 
