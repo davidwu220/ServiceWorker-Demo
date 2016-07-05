@@ -36,50 +36,8 @@ self.addEventListener('install', function(event) {
 		}));
 });
 
-// override fetch()'s default behavior to look in the cache first
-// var nocacheHeaders = new Headers();
-// nocacheHeaders.append("pragma", "no-cache");
-// nocacheHeaders.append("cache-control", "no-cache");
-// self.addEventListener("fetch", function(event) {
-	// var request = event.request;
-	// if (request.method === "GET") {
-		// event.respondWith(
-			// fetch(request.url, {
-				// method: request.method,
-				// headers: nocacheHeaders,
-				// mode: "same-origin",
-				// credentials: request.credentials,
-				// redirect: "manual"
-			// })
-			// .then(function(response) {
-				// console.log("pulling", response, "from network");
-				// return response;
-			// })
-			// .catch(function(error) {
-				// return caches.open(CACHENAME)
-					// .then(function(cache) {
-						// return cache.match(request);
-					// })
-					// .then(function(response) {
-						// console.log("pulling", response, "from cache");
-						// return response;
-					// });
-			// })
-		// );
-	// }
-// });
-
-// self.addEventListener("activate", function(event) {
-	// console.log("[activate] claiming serviceworker");
-	// event.waitUntil(self.clients.claim());
-// });
-
-// override fetch()'s default behavior to look in the cache first
-var nocacheHeaders = new Headers();
-nocacheHeaders.append("pragma", "no-cache");
-nocacheHeaders.append("cache-control", "no-cache");
-
-// Cache files that were not successfully fetched from cache and fetched from the server
+// Try to fetch from the network; if unsucessful, then return from the cache;
+// fallback to default image if necessary
 self.addEventListener('fetch', function(event) {	
 	var request = event.request;
 	event.respondWith(
