@@ -60,48 +60,14 @@ var nocacheHeaders = new Headers();
 nocacheHeaders.append("pragma", "no-cache");
 nocacheHeaders.append("cache-control", "no-cache");
 
-function promiseFromCache(request){
-
-}
-
 // Cache files that were not successfully fetched from cache and fetched from the server
 self.addEventListener('fetch', function(event) {	
 	var request = event.request;
 	event.respondWith(
-		fetch(request.url, {
-			method: request.method,
-			headers: nocacheHeaders,
-			mode: "same-origin",
-			credentials: request.credentials,
-			redirect: "manual"
-		}).then(function(fetchResponse) {
-			console.log("[net]", request.url, fetchResponse.statusText);
-			if (!fetchResponse || !fetchResponse.ok) {
-				throw Error(request);
-			}
-			console.log(fetchResponse.bodyUsed);
-			caches.open(CACHENAME).then(function(cache){
-				cache.match(request).then(function(cacheResponse){
-					if (!cacheResponse) {
-						console.log("[cachePut]", request.url);
-						cache.put(request, fetchResponse.clone());
-					} else {
-						console.log("[cachePut]", request.url, "already cached");
-					}
-				})
-			})
-			return fetchResponse;
-		}).catch(function(error){
-			console.log(error);
-			return caches.open(CACHENAME).then(function(cache) {
-				return cache.match(request);
-			}).then(function(cacheResponse) {
-				if (cacheResponse) {
-					console.log("[cacheMatch]", request.url, cacheResponse.statusText);
-					return cacheResponse;
-				}
-				return caches.match(UNAVAILABLE_FILE);
-			});
+		fetch(event.request).then(function(response){
+			return response || caches.open(CACHENAME).then(function(cache){ return cache.match(request)})
+		}).catch(function() {
+			return caches.match(UNAVAILABLE_FILE);
 		})
 	);
 });
