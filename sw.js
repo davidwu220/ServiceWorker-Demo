@@ -41,13 +41,35 @@ self.addEventListener('install', function(event) {
 self.addEventListener('fetch', function(event) {	
 	var request = event.request;
 	event.respondWith(
-		fetch(event.request).then(function(response){
-			return response || caches.open(CACHENAME).then(function(cache){ return cache.match(request)})
-		}).catch(function() {
-			return caches.match(UNAVAILABLE_FILE);
-		})
+		fetch(request)
+			.then(response => cachePut(request, response))
+			.catch(() => cacheMatch(event))
+			.catch(() => cacheFallback(event))
 	);
 });
+
+function cachePut(request, response) {
+	if (response.ok) {
+		var rCopy = response.clone();
+		caches.open(CACHENAME).then(cache => {
+			cache.put(request, rCopy);
+		});
+		return response;
+	}
+}
+
+function cacheMatch(event) {
+	return caches.match(event.request).then(response => {
+		if (!response) {
+			throw Error();
+		}
+		return response;
+	});
+}
+
+function cacheFallback(event) {
+	return caches.match(UNAVAILABLE_FILE);
+}
 
 self.addEventListener("activate", function(event) {
 	console.log("[activate] Claiming service worker from old script");
