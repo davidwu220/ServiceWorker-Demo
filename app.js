@@ -1,8 +1,6 @@
 window.onload = function() {
 	// Open connection to the database
 	todoDB.open(refreshTodos);
-	
-	registerSW("sw.js");
 
 	var newTodoForm = document.getElementById('new-todo-form');
 	var newTodoInput = document.getElementById('new-todo');
