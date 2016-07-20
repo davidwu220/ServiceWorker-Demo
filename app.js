@@ -25,7 +25,47 @@ window.onload = function() {
 		// Don't send the form
 		return false;
 	};
+
+	if(navigator.serviceWorker) {
+		console.log('[registerSW] This browser supports service worker.');
+		if(navigator.serviceWorker.controller) {
+			console.log('[registerSW] Service worker is active already.');
+		} else {
+			navigator.serviceWorker.register('sw.js').then(function(reg) {
+                if(reg.waiting) {
+                    console.log('Service worker update ready.');
+                    return;
+                }
+                
+                if (reg.installing) {
+                    console.log('Update in progress');
+                    trackInstalling(reg.installing);
+                    return;
+                }
+                
+                reg.addEventListener('updatefound', function() {
+                    trackInstalling(reg.installing);
+                });
+			}).catch(function(error) {
+				console.log('[registerSW] There\'s and error while registering.', error);
+			});
+		}
+	} else {
+		console.log('[registerSW] This browser does not support service worker.');
+	}
 };
+
+function trackInstalling(worker) {
+    var controller = this;
+    
+    worker.addEventListener('statechange', function() {
+        if (worker.state == 'installed') {
+            console.log('[trackInstalling] Finished install, update ready');
+//            console.log('[trackInstalling] Reloading the page...');
+//            location.reload();
+        }
+    });
+}
 
 // update the list of todo items
 function refreshTodos() {
