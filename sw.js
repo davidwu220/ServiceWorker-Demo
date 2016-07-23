@@ -1,9 +1,5 @@
-var CACHENAME = 'quick-test-v1';
-var offlineImage = '/images/sad.jpg';
-var cacheThese = [
-    './',
-    offlineImage
-];
+var CACHENAME = 'quick-test-v10';
+var cacheThese = [];
 
 self.addEventListener('install', function(event) {
     event.waitUntil(caches.open(CACHENAME).then(function(cache) {
@@ -20,7 +16,7 @@ self.addEventListener('fetch', function(event) {
         }).catch(function() {
             return fetchFromCache(event);
         }).catch(function(){
-            return caches.match(offlineImage);
+            return new Response('Oops, no cache found..');
         })
     );
 });
@@ -71,4 +67,21 @@ self.addEventListener('message', function(event) {
    if(event.data.action == 'skipWaiting') {
        self.skipWaiting();
    } 
+});
+
+self.addEventListener('sync', function(event) {
+    function dateTime() {
+        var date = new Date();
+        var str = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " " +  date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+
+        return str;
+    }
+    
+    if(event.tag.startsWith('outbox-')) {
+        event.waitUntil(
+            self.registration.showNotification("Sync event fired!", {
+                body: dateTime()
+            })
+        );
+    }
 });
