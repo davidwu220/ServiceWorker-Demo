@@ -15,35 +15,38 @@ self.addEventListener('fetch', function(event) {
         fetch(request, {cache: "no-store"}).then(function(response) {
             return addToCache(request, response);
         }).catch(function() {
-            return fetchFromCache(event);
+            return fetchFromCache(request);
         }).catch(function(){
             return new Response('Oops, no cache found..');
         })
     );
 });
 
-function stripAPEXState(url){
-    var match = urlRegex.exec(url);
+function stripAPEXState(request){
+    var match = urlRegex.exec(request.url);
     if (match != null) {
-        console.log(new Request(match));
+        //console.log(new Request(match));
+        return new Request(match[0]);
     }
+    return request;
 }
 
 function addToCache(request, response) {
-    if(response.ok) {
-        stripAPEXState(request.url);
-        var copy = new Response(response);
+    if(request.method == "GET" && response.ok) {
+        var requestCopy = stripAPEXState(request);
+        var responseCopy = response.clone();
         caches.open(CACHENAME).then(function(cache) {
-            cache.put(request, copy);
+            cache.put(requestCopy, responseCopy);
         });
     }
     return response;
 }
 
-function fetchFromCache(event) {
-    return caches.match(event.request).then(function(response){
+function fetchFromCache(request) {
+    var requestCopy = stripAPEXState(request);
+    return caches.match(requestCopy).then(function(response){
         if(!response) {
-            throw Error('${event.request.url} not found in cache');
+            throw Error('${requestCopy.url} not found in cache');
         }
         
         return response;
