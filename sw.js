@@ -1,5 +1,6 @@
 var CACHENAME = 'quick-test-v10';
 var cacheThese = [];
+var urlRegex = new RegExp(/https:\/\/\S+\/ords\/f\?p=\d+:\d+/, '');
 
 self.addEventListener('install', function(event) {
     event.waitUntil(caches.open(CACHENAME).then(function(cache) {
@@ -9,7 +10,7 @@ self.addEventListener('install', function(event) {
 
 self.addEventListener('fetch', function(event) {
     var request = event.request;
-    
+
     event.respondWith(
         fetch(request, {cache: "no-store"}).then(function(response) {
             return addToCache(request, response);
@@ -21,9 +22,17 @@ self.addEventListener('fetch', function(event) {
     );
 });
 
+function stripAPEXState(url){
+    var match = urlRegex.exec(url);
+    if (match != null) {
+        console.log(new Request(match));
+    }
+}
+
 function addToCache(request, response) {
     if(response.ok) {
-        var copy = response.clone();
+        stripAPEXState(request.url);
+        var copy = new Response(response);
         caches.open(CACHENAME).then(function(cache) {
             cache.put(request, copy);
         });
