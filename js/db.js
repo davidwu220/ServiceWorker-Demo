@@ -36,7 +36,7 @@ var apexDB = (function() {
         
         // Handle errors when opening the datastore
         request.onerror = aDB.onerror;
-    }
+    };
     
     aDB.fetchFields = function(callback) {
         var db = datastore;
@@ -47,6 +47,7 @@ var apexDB = (function() {
         var cursorRequest = objStore.openCursor(keyRange);
         
         var inputs = [];
+        
         // Triggered for each item successfully returned from the database
         cursorRequest.onsuccess = function(event) {
             var result = event.target.result;
@@ -58,7 +59,7 @@ var apexDB = (function() {
             result.continue();
         };
         
-        // Return the inputs list when transaction is complete
+        // Return the inputs list when transaction is completed
         transaction.oncomplete = function(event) {
             callback(inputs);
         };
@@ -67,7 +68,45 @@ var apexDB = (function() {
     };
     
     aDB.saveFieldData = function(id, value, callback) {
+        var db = datastore;
+        var transaction = db.transaction([_STORENAME], 'readwrite');
+        var objStore = transaction.objectStore(_STORENAME);
+        var inputId = id;
+        var tagName = $(inputId).prop('tagName').toLowerCase();
+        var value;
         
+        switch(tagName) {
+            case 'select':
+                value = $(inputId option:selected).text();
+                break;
+            case 'input':
+                value = $(inputId).val();
+                break;
+            case 'textField':
+                // TODO...
+            default:
+                value = null;
+        }
+        
+        if(value) {
+            // Create the data
+            var data = {
+                'id': inputId,
+                'tagName': tagName,     // test purpose, may be taken off in the future
+                'value': value
+            };
+
+            // Save the data to IndexedDB
+            var request = objStore.put(data);
+
+            request.onsuccess = function(event) {
+                callback(data);
+            };
+
+            request.onerror = aDB.onerror;
+        } else {
+            console.log('[aDB.saveFielddata] value is null.');
+        }
     };
     
     return aDB;
