@@ -10,7 +10,7 @@ var apexDB = (function() {
     // open a connection to hte datastore
     aDB.open = function(callback) {
 
-        var request = indxedDB.open(_DBNAME, _VERSION);
+        var request = indexedDB.open(_DBNAME, _VERSION);
         
         request.onupgradeneeded = function(event) {
             var db = event.target.result;
@@ -72,41 +72,24 @@ var apexDB = (function() {
         var transaction = db.transaction([_STORENAME], 'readwrite');
         var objStore = transaction.objectStore(_STORENAME);
         var inputId = id;
-        var tagName = $(inputId).prop('tagName').toLowerCase();
-        var value;
+        var tagName = $('#' + inputId).prop('tagName').toLowerCase();
         
-        switch(tagName) {
-            case 'select':
-                value = $(inputId option:selected).text();
-                break;
-            case 'input':
-                value = $(inputId).val();
-                break;
-            case 'textField':
-                // TODO...
-            default:
-                value = null;
-        }
+        // Create the data
+        var data = {
+            'id': inputId,
+            'tagName': tagName,
+            'value': value
+        };
+
+        // Save the data to IndexedDB
+        var request = objStore.put(data);
+
+        request.onsuccess = function(event) {
+            callback(data);
+        };
+
+        request.onerror = aDB.onerror;
         
-        if(value) {
-            // Create the data
-            var data = {
-                'id': inputId,
-                'tagName': tagName,     // test purpose, may be taken off in the future
-                'value': value
-            };
-
-            // Save the data to IndexedDB
-            var request = objStore.put(data);
-
-            request.onsuccess = function(event) {
-                callback(data);
-            };
-
-            request.onerror = aDB.onerror;
-        } else {
-            console.log('[aDB.saveFielddata] value is null.');
-        }
     };
     
     return aDB;

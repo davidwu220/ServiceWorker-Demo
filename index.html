@@ -5,7 +5,10 @@
 	<meta charset="utf-8">
 
 	<title>Quick test</title>
+    
+    <script   src="https://code.jquery.com/jquery-2.2.4.js"   integrity="sha256-iT6Q9iMJYuQiMWNd9lDyBUStIq/8PuOW33aOqmvFpqI="   crossorigin="anonymous"></script>
 	<script src="js/main.js"></script>
+	<script src="js/db.js"></script>
 	<link rel="stylesheet" href="css/style.css">
 </head>
 
@@ -17,6 +20,21 @@
     <div id="updateReady" style="display: none;">
         <p>An Update Is Ready!</p>
         <input type="button" id="refreshBtn" value="Refresh!">
+    </div>
+    
+    <div id="form-input">
+        <form>
+            <label for="input1">This is input1</label>
+            <input type="text" id="input1">
+            <label for="input2">This is input2</label>
+            <input type="text" id="input2">
+            <label for="input3">This is input3</label>
+            <input type="text" id="input3">
+            <select id="selecter1">
+                <option value="Drydock" selected="selected">Drydock</option>
+                <option value="Wetdock">Wetdock</option>
+            </select>
+        </form>
     </div>
     
 </body>
