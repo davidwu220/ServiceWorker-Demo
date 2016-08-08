@@ -65,8 +65,12 @@ window.onload = function() {
     // ************** IndexedDB code starts here... **************
     apexDB.open(loadSavedFields);
     
-    var formInput = document.getElementById('form-input');
-    
+    registerFieldListeners('form-input');
+};
+
+function registerFieldListeners(jquerySelector) {
+    var formInput = $(jquerySelector);
+
     formInput.addEventListener('focusout', function(event) {
         var targetId = event.target.id;
         var targetTagName = event.target.tagName.toLowerCase();
@@ -92,8 +96,7 @@ window.onload = function() {
         });
         
     });
-    
-};
+}
 
 function loadSavedFields() {
     apexDB.fetchFields(function(inputs) {
