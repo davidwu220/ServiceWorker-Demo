@@ -79,7 +79,7 @@ function registerFieldListeners(div) {
     console.log("registerFieldListeners: ", formInputs.toArray());
     formInputs.each( function(){
         var field = $(this);
-        registerSaveOnFocusOut(this);
+        registerSaveOnEvent(this, 'input');
     });
 }
 
@@ -88,19 +88,23 @@ function registerFieldListeners(div) {
  * @param div [String] a jQuery selector string
  */
 function getFormInputs(div) {
-    return $(jQuerySelector).find( ":input" ).not( ":submit" ).not( ":reset" ).not( ":button" ).not( ":file" ).not( ":password" ).not( ":disabled" ).not( "[readonly]" );
+    return $(div).find( ":input" ).not( ":submit" ).not( ":reset" ).not( ":button" ).not( ":file" ).not( ":password" ).not( ":disabled" ).not( "[readonly]" );
 
 }
 
 /**
- * Registers this individual field to save into apexDB on focusout.
+ * Registers this individual field to save into apexDB when the specified
+ * event type occurs.
+ *
+ * @param field [DOMObject] a field name
+ * @param eventType [String] a js event type
  */
-function registerSaveOnFocusOut(field) {
-    $(field).on('focusout', function() { 
+function registerSaveOnEvent(field, eventType) {
+    $(field).on(eventType, function() {
         apexDB.saveFieldData(field.id, field.value, function(data) {
             // [> a refresh function <]
             console.log('[IndexedDB saveFieldData] Data Saved: ', data);
-        });
+        })
     });
 }
 
