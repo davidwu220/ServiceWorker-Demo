@@ -65,29 +65,40 @@ window.onload = function() {
     // ************** IndexedDB code starts here... **************
     apexDB.open(loadSavedFields);
     
-    var formInput = document.getElementById('form-input');
-    
-    formInput.addEventListener('focusout', function(event) {
-        var targetId = event.target.id;
-        var targetTagName = event.target.tagName.toLowerCase();
-        var targetValue;
-        
-        switch(targetTagName) {
-            case 'select':
-                targetValue = $('#' + targetId + '  option:selected').val();
-                break;
-            case 'input':
-                targetValue = $('#' + targetId).val();
-                break;
-            case 'textField':
-                // TODO...
-            default:
-                targetValue = '';
-        }
-        
-        // save the value
-        apexDB.saveFieldData(targetId, targetValue, function(data) {
-            /* a refresh function */
+    registerFieldListeners('#form-input');
+};
+
+
+/**
+ * Register appropriate event listeners for each input field in the div.
+ * Currently, assigns a focusout listener for each field.
+ * @param div [String] a jQuery selector string
+ */
+function registerFieldListeners(div) {
+    var formInputs = getFormInputs(div);
+    console.log("registerFieldListeners: ", formInputs.toArray());
+    formInputs.each( function(){
+        var field = $(this);
+        registerSaveOnFocusOut(this);
+    });
+}
+
+/**
+ * Return field inputs that we want to capture.
+ * @param div [String] a jQuery selector string
+ */
+function getFormInputs(div) {
+    return $(jQuerySelector).find( ":input" ).not( ":submit" ).not( ":reset" ).not( ":button" ).not( ":file" ).not( ":password" ).not( ":disabled" ).not( "[readonly]" );
+
+}
+
+/**
+ * Registers this individual field to save into apexDB on focusout.
+ */
+function registerSaveOnFocusOut(field) {
+    $(field).on('focusout', function() { 
+        apexDB.saveFieldData(field.id, field.value, function(data) {
+            // [> a refresh function <]
             console.log('[IndexedDB saveFieldData] Data Saved: ', data);
         });
         
