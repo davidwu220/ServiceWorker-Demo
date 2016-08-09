@@ -70,12 +70,12 @@ window.onload = function() {
 
 
 /**
- * Register appropriate event listeners for each input field in the form.
+ * Register appropriate event listeners for each input field in the div.
  * Currently, assigns a focusout listener for each field.
- * @param [String] a jQuery selector string
+ * @param div [String] a jQuery selector string
  */
-function registerFieldListeners(jQuerySelector) {
-    var formInputs = getFormInputs(jQuerySelector);
+function registerFieldListeners(div) {
+    var formInputs = getFormInputs(div);
     console.log("registerFieldListeners: ", formInputs.toArray());
     formInputs.each( function(){
         var field = $(this);
@@ -85,9 +85,9 @@ function registerFieldListeners(jQuerySelector) {
 
 /**
  * Return field inputs that we want to capture.
- * @param [String] a jQuery selector string
+ * @param div [String] a jQuery selector string
  */
-function getFormInputs(jQuerySelector) {
+function getFormInputs(div) {
     return $(jQuerySelector).find( ":input" ).not( ":submit" ).not( ":reset" ).not( ":button" ).not( ":file" ).not( ":password" ).not( ":disabled" ).not( "[readonly]" );
 
 }
