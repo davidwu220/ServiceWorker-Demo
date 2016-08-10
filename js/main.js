@@ -100,12 +100,18 @@ function getFormInputs(div) {
  * @param eventType [String] a js event type
  */
 function registerSaveOnEvent(field, eventType) {
-    $(field).on(eventType, function() {
-        apexDB.saveFieldData(field.id, field.value, function(data) {
-            // [> a refresh function <]
-            console.log('[IndexedDB saveFieldData] Data Saved: ', data);
-        })
-    });
+    $(field).on(eventType, saveInputField(field));
+}
+
+/**
+ * Writes this field to apexDB.
+ * @param field [input] an input field
+ */
+function saveInputField(field) {
+    apexDB.saveFieldData(field.id, field.value, function(data) {
+        // [> a refresh function <]
+        console.log('[IndexedDB saveFieldData] Data Saved: ', data);
+    })
 }
 
 
