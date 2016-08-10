@@ -1,7 +1,7 @@
 window.onload = function() {
     if(!navigator.serviceWorker) return;
     
-    navigator.serviceWorker.register('./sw.js', {scope: './'}).then(function(reg) {
+    navigator.serviceWorker.register('../sw.js', {scope: './'}).then(function(reg) {
         if(reg.waiting) {
             console.log('[register-waiting] Update is ready and waiting!!');
             return;
