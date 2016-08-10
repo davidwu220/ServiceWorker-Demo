@@ -65,9 +65,23 @@ window.onload = function() {
     // ************** IndexedDB code starts here... **************
     apexDB.open(loadSavedFields);
     
-    registerFieldListeners('#form-input');
+    saveAllInterval('#t_Body_content', 5000);
+    //registerFieldListeners('#form-input');
 };
 
+/**
+ * Saves all form inputs in the div on an interval.
+ * @param div [String] a jQuery selector string
+ * @param interval [int] in milliseconds
+ */
+function saveAllInterval(div, interval){
+    var formInputs = getFormInputs(div);
+    setInterval(function(){
+        formInputs.each(function(){
+            saveInputField($(this));
+        });
+    }, interval);
+}
 
 /**
  * Register appropriate event listeners for each input field in the div.
