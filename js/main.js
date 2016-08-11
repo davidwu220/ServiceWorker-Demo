@@ -63,11 +63,26 @@ window.onload = function() {
     });
     
     // ************** IndexedDB code starts here... **************
+    idHiddenFields('#t_Body_content');
     apexDB.open(loadSavedFields);
-    
     saveAllInterval('#t_Body_content', 5000);
     //registerFieldListeners('#form-input');
 };
+
+
+/**
+ * Assigns ids to hidden fields that don't have one.
+ */
+function idHiddenFields(div) {
+    var index = 0;
+    var formInputs = getFormInputs(div);
+    formInputs.each(function(){
+        if(this.id == '') {
+            this.id = 'p_arg_' + index;
+            index += 1;
+        }
+    });
+}
 
 /**
  * Saves all form inputs in the div on an interval.
