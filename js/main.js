@@ -78,7 +78,7 @@ function saveAllInterval(div, interval){
     var formInputs = getFormInputs(div);
     setInterval(function(){
         formInputs.each(function(){
-            saveInputField($(this));
+            saveInputField(this);
         });
     }, interval);
 }
@@ -122,9 +122,9 @@ function registerSaveOnEvent(field, eventType) {
  * @param field [input] an input field
  */
 function saveInputField(field) {
-    apexDB.saveFieldData(field.id, field.value, function(data) {
+    apexDB.saveFieldData(field, function(data) {
         // [> a refresh function <]
-        console.log('[IndexedDB saveFieldData] Data Saved: ', data);
+        //console.log('[IndexedDB saveFieldData] Data Saved: ', data);
     })
 }
 

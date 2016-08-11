@@ -67,12 +67,13 @@ var apexDB = (function() {
         cursorRequest.onerror = aDB.onerror;
     };
     
-    aDB.saveFieldData = function(id, value, callback) {
+    aDB.saveFieldData = function(field, callback) {
         var db = datastore;
         var transaction = db.transaction([_STORENAME], 'readwrite');
         var objStore = transaction.objectStore(_STORENAME);
-        var inputId = id;
-        var tagName = $('#' + inputId).prop('tagName').toLowerCase();
+        var inputId = field.id;
+        var tagName = field.tagName.toLowerCase();
+        var value = field.value
         
         // Create the data
         var data = {
