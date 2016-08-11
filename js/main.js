@@ -134,7 +134,9 @@ function loadSavedFields() {
         inputs.forEach(function(input, index) {
             switch(input.tagName) {
             case 'select':
-                $('#' + input.id + ' option[value=' + input.value + ']').attr('selected', true);
+                if (input.value) {
+                    $('#' + input.id + ' option[value=' + input.value + ']').attr('selected', true);
+                }
                 break;
             case 'input':
                 $('#' + input.id).val(input.value);
