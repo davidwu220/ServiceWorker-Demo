@@ -71,15 +71,12 @@ var apexDB = (function() {
         var db = datastore;
         var transaction = db.transaction([_STORENAME], 'readwrite');
         var objStore = transaction.objectStore(_STORENAME);
-        var inputId = field.id;
-        var tagName = field.tagName.toLowerCase();
-        var value = field.value
         
         // Create the data
         var data = {
-            'id': inputId,
-            'tagName': tagName,
-            'value': value
+            'id': field.id,
+            'tagName': field.tagName.toLowerCase(),
+            'value': field.value
         };
 
         // Save the data to IndexedDB
