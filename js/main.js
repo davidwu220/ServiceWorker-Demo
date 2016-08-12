@@ -1,3 +1,8 @@
+/**
+ * Portions of this script were based off of https://github.com/simsalabim/sisyphus
+ * Proper attribution is left as an exercise for the maintainer.
+ */
+
 window.onload = function() {
     if(!navigator.serviceWorker) return;
     
@@ -69,6 +74,12 @@ window.onload = function() {
     //registerFieldListeners('#form-input');
 };
 
+/**
+ * Find out if we're using CKEditor.
+ */
+function CKEditorExists() {
+    return typeof CKEDITOR !== "undefined";
+}
 
 /**
  * Assigns ids to hidden fields that don't have one.
@@ -137,6 +148,12 @@ function registerSaveOnEvent(field, eventType) {
  * @param field [input] an input field
  */
 function saveInputField(field) {
+    if (CKEditorExists()) {
+        var editor = CKEDITOR.instances[field.id];
+        if (editor) {
+            field.value = editor.getData();
+        }
+    }
     apexDB.saveFieldData(field, function(data) {
         // [> a refresh function <]
         //console.log('[IndexedDB saveFieldData] Data Saved: ', data);
@@ -156,8 +173,16 @@ function loadSavedFields() {
             case 'input':
                 $('#' + input.id).val(input.value);
                 break;
-            case 'textField':
-                // TODO...
+            case 'textarea':
+                if (CKEditorExists()) {
+                    var editor = CKEDITOR.instances[input.id];
+                    console.log(editor);
+                    if (editor){
+                        editor.setData(input.value);
+                        return;
+                   }
+                }
+                $('#' + input.id).val(input.value);
             default:
                 console.log('TagName not catched: ' + input.tagName);
             }
