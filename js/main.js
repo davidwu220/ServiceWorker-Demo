@@ -37,34 +37,34 @@ window.onload = function() {
         });
     }).then(function() {
         
-        // dynamically adding a button for registering
-        //var notiDiv = document.getElementById('notiDiv');
-        //var input = document.createElement('input');
+        // //dynamically adding a button for registering
+        // var notiDiv = document.getElementById('notiDiv');
+        // var input = document.createElement('input');
         
-        //input.setAttribute('id', 'syncBtn');
-        //input.setAttribute('type', 'button');
-        //input.setAttribute('value', 'Register background sync!');
-        //notiDiv.appendChild(input);
+        // input.setAttribute('id', 'syncBtn');
+        // input.setAttribute('type', 'button');
+        // input.setAttribute('value', 'Register background sync!');
+        // notiDiv.appendChild(input);
         
-        //// listen to click event
-        //document.getElementById('syncBtn').addEventListener('click', function(event) {
-            //event.preventDefault();
-            //// Request a sync
-            //navigator.serviceWorker.ready.then(function(reg) {
-                //var item = 'outbox-' + Date.now();
-                //return reg.sync.register(item).then(function() {
-                    //// registration succeeded
-                    //var log = document.createElement('p');
-                    //log.textContent = item + ' registered!';
-                    //notiDiv.appendChild(log);
-                //}, function() {
-                    //// registration failed
-                    //var log = document.createElement('p');
-                    //log.textContent = 'Registration failed';
-                    //notiDiv.appendChild(log);
-                //});
-            //});
-        //});
+        // // listen to click event
+        // document.getElementById('syncBtn').addEventListener('click', function(event) {
+        //     event.preventDefault();
+        //     // Request a sync
+        //     navigator.serviceWorker.ready.then(function(reg) {
+        //         var item = 'outbox-' + Date.now();
+        //         return reg.sync.register(item).then(function() {
+        //             // registration succeeded
+        //             var log = document.createElement('p');
+        //             log.textContent = item + ' registered!';
+        //             notiDiv.appendChild(log);
+        //         }, function() {
+        //             // registration failed
+        //             var log = document.createElement('p');
+        //             log.textContent = 'Registration failed';
+        //             notiDiv.appendChild(log);
+        //         });
+        //     });
+        // });
     });
     
     // ************** IndexedDB code starts here... **************
@@ -73,6 +73,24 @@ window.onload = function() {
     saveAllInterval('#t_Body_content', 5000);
     //registerFieldListeners('#form-input');
 };
+
+function dateTime() {
+    var date = new Date();
+    var str = date.getFullYear() + "/" + (date.getMonth() + 1) + "/" + date.getDate() + " " +  date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+
+    return str;
+}
+
+// Highlight the 'saved' message
+function highlightStatus() {
+	console.log('hereeeee');
+	$('#status').addClass("highlight");
+
+    $('#status').removeClass('highlight', {
+      duration: 2000,
+      easing: 'easeInQuint'
+    });
+}
 
 /**
  * Find out if we're using CKEditor.
@@ -100,12 +118,14 @@ function idHiddenFields(div) {
  * @param div [String] a jQuery selector string
  * @param interval [int] in milliseconds
  */
-function saveAllInterval(div, interval){
+function saveAllInterval(div, interval) {
     var formInputs = getFormInputs(div);
-    setInterval(function(){
+    setInterval(function() {
         formInputs.each(function(){
             saveInputField(this);
         });
+        $('#status').html('Last saved: ' + dateTime());
+    	highlightStatus();
     }, interval);
 }
 
