@@ -83,7 +83,6 @@ function dateTime() {
 
 // Highlight the 'saved' message
 function highlightStatus() {
-	console.log('hereeeee');
 	$('#status').addClass("highlight");
 
     $('#status').removeClass('highlight', {
