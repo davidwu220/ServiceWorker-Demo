@@ -3,6 +3,8 @@
  * Proper attribution is left as an exercise for the maintainer.
  */
 
+var timeLastSaved = '';
+
 window.onload = function() {
     if(!navigator.serviceWorker) return;
     
@@ -74,18 +76,27 @@ window.onload = function() {
     //registerFieldListeners('#form-input');
 };
 
-function dateTime() {
-    var date = new Date();
-    var str = date.getFullYear() + "/" + (date.getMonth() + 1) + "/" + date.getDate() + " " +  date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+function dateTime(date) {
+    var str = date.getFullYear() 
+    	+ "/" 
+    	+ (date.getMonth() + 1) 
+    	+ "/" 
+    	+ date.getDate() 
+    	+ " " 
+    	+  date.getHours() 
+    	+ ":" 
+    	+ date.getMinutes() 
+    	+ ":" 
+    	+ date.getSeconds();
 
     return str;
 }
 
 // Highlight the 'saved' message
-function highlightStatus() {
-	$('#status').addClass("highlight");
+function highlightThis(tag) {
+	$(tag).addClass("highlight");
 
-    $('#status').removeClass('highlight', {
+    $(tag).removeClass('highlight', {
       duration: 2000,
       easing: 'easeInQuint'
     });
@@ -123,8 +134,9 @@ function saveAllInterval(div, interval) {
         formInputs.each(function(){
             saveInputField(this);
         });
-        $('#status').html('Last saved: ' + dateTime());
-    	highlightStatus();
+        timeLastSaved = dateTime(new Date());
+        $('#timeLastSaved').html(timeLastSaved);
+    	highlightThis('#status');
     }, interval);
 }
 
@@ -173,10 +185,18 @@ function saveInputField(field) {
             field.value = editor.getData();
         }
     }
+
     apexDB.saveFieldData(field, function(data) {
-        // [> a refresh function <]
-        //console.log('[IndexedDB saveFieldData] Data Saved: ', data);
-    })
+    	apexDB.saveFieldData({
+    		id: 'timeStamp',
+    		tagName: 'timeStamp',
+    		value: timeLastSaved
+    	}, function(data) {
+	        // [> a refresh function <]
+	        //console.log('[IndexedDB saveFieldData] Data Saved: ', data);
+    		console.log("Time stamp done!", timeLastSaved);
+    	});
+    });
 }
 
 
@@ -184,26 +204,29 @@ function loadSavedFields() {
     apexDB.fetchFields(function(inputs) {
         inputs.forEach(function(input, index) {
             switch(input.tagName) {
-            case 'select':
-                if (input.value) {
-                    $('#' + input.id + ' option[value=' + input.value + ']').attr('selected', true);
-                }
-                break;
-            case 'input':
-                $('#' + input.id).val(input.value);
-                break;
-            case 'textarea':
-                if (CKEditorExists()) {
-                    var editor = CKEDITOR.instances[input.id];
-                    console.log(editor);
-                    if (editor){
-                        editor.setData(input.value);
-                        return;
-                   }
-                }
-                $('#' + input.id).val(input.value);
-            default:
-                console.log('TagName not catched: ' + input.tagName);
+            	case 'timestamp':
+        			$('#timeLastSaved').html(input.value);
+        			break;
+	            case 'select':
+	                if (input.value) {
+	                    $('#' + input.id + ' option[value=' + input.value + ']').attr('selected', true);
+	                }
+	                break;
+	            case 'input':
+	                $('#' + input.id).val(input.value);
+	                break;
+	            case 'textarea':
+	                if (CKEditorExists()) {
+	                    var editor = CKEDITOR.instances[input.id];
+	                    console.log(editor);
+	                    if (editor){
+	                        editor.setData(input.value);
+	                        return;
+	                   }
+	                }
+	                $('#' + input.id).val(input.value);
+	            default:
+	                console.log('TagName not catched: ' + input.tagName);
             }
         });
     });
