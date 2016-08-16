@@ -39,34 +39,34 @@ window.onload = function() {
         });
     }).then(function() {
         
-        // dynamically adding a button for registering
-        //var notiDiv = document.getElementById('notiDiv');
-        //var input = document.createElement('input');
+        // //dynamically adding a button for registering
+        // var notiDiv = document.getElementById('notiDiv');
+        // var input = document.createElement('input');
         
-        //input.setAttribute('id', 'syncBtn');
-        //input.setAttribute('type', 'button');
-        //input.setAttribute('value', 'Register background sync!');
-        //notiDiv.appendChild(input);
+        // input.setAttribute('id', 'syncBtn');
+        // input.setAttribute('type', 'button');
+        // input.setAttribute('value', 'Register background sync!');
+        // notiDiv.appendChild(input);
         
-        //// listen to click event
-        //document.getElementById('syncBtn').addEventListener('click', function(event) {
-            //event.preventDefault();
-            //// Request a sync
-            //navigator.serviceWorker.ready.then(function(reg) {
-                //var item = 'outbox-' + Date.now();
-                //return reg.sync.register(item).then(function() {
-                    //// registration succeeded
-                    //var log = document.createElement('p');
-                    //log.textContent = item + ' registered!';
-                    //notiDiv.appendChild(log);
-                //}, function() {
-                    //// registration failed
-                    //var log = document.createElement('p');
-                    //log.textContent = 'Registration failed';
-                    //notiDiv.appendChild(log);
-                //});
-            //});
-        //});
+        // // listen to click event
+        // document.getElementById('syncBtn').addEventListener('click', function(event) {
+        //     event.preventDefault();
+        //     // Request a sync
+        //     navigator.serviceWorker.ready.then(function(reg) {
+        //         var item = 'outbox-' + Date.now();
+        //         return reg.sync.register(item).then(function() {
+        //             // registration succeeded
+        //             var log = document.createElement('p');
+        //             log.textContent = item + ' registered!';
+        //             notiDiv.appendChild(log);
+        //         }, function() {
+        //             // registration failed
+        //             var log = document.createElement('p');
+        //             log.textContent = 'Registration failed';
+        //             notiDiv.appendChild(log);
+        //         });
+        //     });
+        // });
     });
     
     // ************** IndexedDB code starts here... **************
@@ -96,10 +96,6 @@ var SAVENOW = function() {
 		$('#timeLastSaved').html(timeLastSaved);
 		highlightThis('#status');
 	}
-}
-
-function getFormInputs(formInputs) {
-	this.formInputs = formInputs;
 }
 
 /**

@@ -16,7 +16,7 @@ self.addEventListener('fetch', function(event) {
             return addToCache(request, response);
         }).catch(function() {
             return fetchFromCache(request);
-        }).catch(function(){
+        }).catch(function() {
             return new Response('Oops, no cache found..');
         })
     );
