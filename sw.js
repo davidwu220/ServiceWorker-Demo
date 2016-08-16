@@ -1,4 +1,4 @@
-var CACHENAME = 'quick-test-v10';
+var CACHENAME = 'quick-test-v1';
 var cacheThese = [];
 var urlRegex = new RegExp(/https:\/\/\S+\/ords\/f\?p=\d+:\d+/, '');
 
@@ -84,7 +84,7 @@ self.addEventListener('message', function(event) {
 self.addEventListener('sync', function(event) {
     function dateTime() {
         var date = new Date();
-        var str = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " " +  date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+        var str = date.getFullYear() + "/" + (date.getMonth() + 1) + "/" + date.getDate() + " " +  date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
 
         return str;
     }

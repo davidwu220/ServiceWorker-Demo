@@ -6,6 +6,21 @@ var apexDB = (function() {
     var aDB = {};
     var datastore = null;
     
+    function dateTime(date) {
+    	var dateStr = date.getFullYear()
+    		+ '/'
+    		+ (date.getMonth() + 1)
+    		+ '/'
+    		+ date.getDate()
+    		+ ' '
+    		+ date.getHours()
+    		+ ':'
+    		+ date.getMinutes()
+    		+ ':'
+    		+ date.getSeconds();
+    		
+    	return dateStr;
+    }
     
     // open a connection to hte datastore
     aDB.open = function(callback) {
@@ -89,6 +104,17 @@ var apexDB = (function() {
         request.onerror = aDB.onerror;
         
     };
+    
+    aDB.timeStamp = function() {
+    	var timeStamp = dateTime(new Date());
+    	aDB.saveFieldData({
+    		id: 'timestamp',
+    		tagName: 'timestamp',
+    		value: timeStamp
+    	}, function (data) {});
+    	
+    	return timeStamp;
+    }
     
     return aDB;
 }());

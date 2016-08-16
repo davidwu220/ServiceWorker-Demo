@@ -3,6 +3,8 @@
  * Proper attribution is left as an exercise for the maintainer.
  */
 
+var timeLastSaved = '';
+
 window.onload = function() {
     if(!navigator.serviceWorker) return;
     
@@ -70,9 +72,35 @@ window.onload = function() {
     // ************** IndexedDB code starts here... **************
     idHiddenFields('#t_Body_content');
     apexDB.open(loadSavedFields);
-    saveAllInterval('#t_Body_content', 5000);
+    saveAllInterval('#t_Body_content', 15000);
     //registerFieldListeners('#form-input');
 };
+
+// highlight function
+function highlightThis(tag) {
+	$(tag).addClass('highlight');
+	$(tag).removeClass('highlight', {
+		duration: 2000,
+		easing: 'easeInQuint'
+	});
+}
+
+// [PUBLIC] Save Now function
+var SAVENOW = function() {
+	if(formInputs) {
+		formInputs.each(function() {
+			saveInputField(this);
+		});
+
+		timeLastSaved = apexDB.timeStamp();
+		$('#timeLastSaved').html(timeLastSaved);
+		highlightThis('#status');
+	}
+}
+
+function getFormInputs(formInputs) {
+	this.formInputs = formInputs;
+}
 
 /**
  * Find out if we're using CKEditor.
@@ -100,12 +128,19 @@ function idHiddenFields(div) {
  * @param div [String] a jQuery selector string
  * @param interval [int] in milliseconds
  */
+
+var formInputs = null;
+
 function saveAllInterval(div, interval){
-    var formInputs = getFormInputs(div);
+    formInputs = getFormInputs(div);
     setInterval(function(){
         formInputs.each(function(){
             saveInputField(this);
         });
+
+        timeLastSaved = apexDB.timeStamp();
+        $('#timeLastSaved').html(timeLastSaved);
+        highlightThis('#status');
     }, interval);
 }
 
@@ -154,10 +189,7 @@ function saveInputField(field) {
             field.value = editor.getData();
         }
     }
-    apexDB.saveFieldData(field, function(data) {
-        // [> a refresh function <]
-        //console.log('[IndexedDB saveFieldData] Data Saved: ', data);
-    })
+    apexDB.saveFieldData(field, function(data) {});
 }
 
 
@@ -165,6 +197,9 @@ function loadSavedFields() {
     apexDB.fetchFields(function(inputs) {
         inputs.forEach(function(input, index) {
             switch(input.tagName) {
+            case 'timestamp':
+            	$('#timeLastSaved').html(input.value);
+            	break;
             case 'select':
                 if (input.value) {
                     $('#' + input.id + ' option[value=' + input.value + ']').attr('selected', true);
