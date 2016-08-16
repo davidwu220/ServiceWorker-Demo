@@ -6,6 +6,10 @@ var apexDB = (function() {
     var aDB = {};
     var datastore = null;
     
+    /**
+     * Converts a date object into a string
+     * using toLocaleString.
+     */
     function dateTime(date) {
         options = {
             "year":"2-digit",
@@ -18,7 +22,9 @@ var apexDB = (function() {
         return date.toLocaleString("en-US", options);
     }
     
-    // open a connection to hte datastore
+    /** 
+     * Open a connection to the datastore.
+     */
     aDB.open = function(callback) {
 
         var request = indexedDB.open(_DBNAME, _VERSION);
@@ -49,6 +55,9 @@ var apexDB = (function() {
         request.onerror = aDB.onerror;
     };
     
+    /**
+     * Return all field data objects stored in the IndexedDB.
+     */
     aDB.fetchFields = function(callback) {
         var db = datastore;
         var transaction = db.transaction([_STORENAME], 'readwrite');
@@ -77,7 +86,10 @@ var apexDB = (function() {
         
         cursorRequest.onerror = aDB.onerror;
     };
-    
+
+    /**
+     * Save this field's id, name, and value in the IndexedDB.
+     */
     aDB.saveFieldData = function(field, callback) {
         var db = datastore;
         var transaction = db.transaction([_STORENAME], 'readwrite');
@@ -101,6 +113,9 @@ var apexDB = (function() {
         
     };
     
+    /**
+     * Generate a timestamp data object for the db.
+     */
     aDB.timeStamp = function() {
     	var timeStamp = dateTime(new Date());
     	aDB.saveFieldData({

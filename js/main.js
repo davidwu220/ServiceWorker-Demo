@@ -76,26 +76,16 @@ window.onload = function() {
     //registerFieldListeners('#form-input');
 };
 
-// highlight function
+/**
+ * Triggers the element's highlight animation.
+ * @param tag [tag] an html element
+ */
 function highlightThis(tag) {
 	$(tag).addClass('highlight');
 	$(tag).removeClass('highlight', {
 		duration: 2000,
 		easing: 'easeInQuint'
 	});
-}
-
-// [PUBLIC] Save Now function
-var SAVENOW = function() {
-	if(formInputs) {
-		formInputs.each(function() {
-			saveInputField(this);
-		});
-
-		timeLastSaved = apexDB.timeStamp();
-		$('#timeLastSaved').html(timeLastSaved);
-		highlightThis('#status');
-	}
 }
 
 /**
@@ -106,7 +96,9 @@ function CKEditorExists() {
 }
 
 /**
- * Assigns ids to hidden fields that don't have one.
+ * Assigns ids to hidden fields that don't have one
+ * within the provided div.
+ * @param div [String] a jQuery selector string
  */
 function idHiddenFields(div) {
     var index = 0;
@@ -125,10 +117,8 @@ function idHiddenFields(div) {
  * @param interval [int] in milliseconds
  */
 
-var formInputs = null;
-
 function saveAllInterval(div, interval){
-    formInputs = getFormInputs(div);
+    var formInputs = getFormInputs(div);
     setInterval(function(){
         formInputs.each(function(){
             saveInputField(this);
@@ -138,6 +128,21 @@ function saveAllInterval(div, interval){
         $('#timeLastSaved').html(timeLastSaved);
         highlightThis('#status');
     }, interval);
+}
+
+/**
+ * [Public] function used by APEX page
+ * elements to trigger input field storage.
+ */
+var SAVENOW = function() {
+    let fi = getFormInputs('#t_Body_content');
+    fi.each(function() {
+        saveInputField(this);
+    });
+
+    timeLastSaved = apexDB.timeStamp();
+    $('#timeLastSaved').html(timeLastSaved);
+    highlightThis('#status');
 }
 
 /**
@@ -176,6 +181,8 @@ function registerSaveOnEvent(field, eventType) {
 
 /**
  * Writes this field to apexDB.
+ * If the field (usually a textarea) has a corresponding CKEditor,
+ * store its data in this field.
  * @param field [input] an input field
  */
 function saveInputField(field) {
@@ -188,7 +195,10 @@ function saveInputField(field) {
     apexDB.saveFieldData(field, function(data) {});
 }
 
-
+/**
+ * Restores all fields on this page that were previously stored
+ * in apexDB.
+ */
 function loadSavedFields() {
     apexDB.fetchFields(function(inputs) {
         inputs.forEach(function(input, index) {
@@ -222,6 +232,12 @@ function loadSavedFields() {
     
 }
 
+/**
+ * If this serviceworker is waiting for the old
+ * serviceworker to be unregistered, force a 
+ * page reload.
+ * @param worker [SW] a serviceworker object
+ */
 function trackInstalling(worker) {
     worker.addEventListener('statechange', function() {
         if(worker.state == 'installed') {
