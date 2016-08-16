@@ -23,17 +23,22 @@ self.addEventListener('install', function(event) {
 self.addEventListener('fetch', function(event) {
     var request = event.request;
 
-    event.respondWith(
+    event.respondWith(fetchFirst());
+});
+
+function fetchFirst(){
+    return new Promise(function(resolve,reject) {
         fetch(request, {cache: "no-store"}).then(function(response) {
             return addToCache(request, response);
-        }).catch(function() {
+        }).catch(function(e) {
+            console.log(e);
             return fetchFromCache(request);
         }).catch(function(e) {
             console.error(e);
             return new Response('Oops, no cache found..');
         })
-    );
-});
+    });
+}
 
 /**
  * Strips unnecessary parameters from the 

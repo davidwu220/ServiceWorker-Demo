@@ -3,9 +3,7 @@
  * Proper attribution is left as an exercise for the maintainer.
  */
 
-var _FIELDSTOSAVE = '#t_Body_content';
 var timeLastSaved = '';
-var formInputs = null;
 
 window.onload = function() {
     if(!navigator.serviceWorker) return;
@@ -72,28 +70,11 @@ window.onload = function() {
     });
     
     // ************** IndexedDB code starts here... **************
-    formInputs = getFormInputs(_FIELDSTOSAVE);
-    idHiddenFields(_FIELDSTOSAVE);
+    idHiddenFields('#t_Body_content');
     apexDB.open(loadSavedFields);
-    saveAllInterval(_FIELDSTOSAVE, 15000);
+    saveAllInterval('#t_Body_content', 15000);
     //registerFieldListeners('#form-input');
 };
-
-/**
- * [Public] function used by APEX page
- * elements to trigger input field storage.
- */
-var SAVENOW = function() {
-    if(formInputs) {
-        formInputs.each(function() {
-            saveInputField(this);
-        });
-
-        timeLastSaved = apexDB.timeStamp();
-        $('#timeLastSaved').html(timeLastSaved);
-        highlightThis('#status');
-    }
-}
 
 /**
  * Triggers the element's highlight animation.
@@ -137,7 +118,7 @@ function idHiddenFields(div) {
  */
 
 function saveAllInterval(div, interval){
-    formInputs = getFormInputs(div);
+    var formInputs = getFormInputs(div);
     setInterval(function(){
         formInputs.each(function(){
             saveInputField(this);
