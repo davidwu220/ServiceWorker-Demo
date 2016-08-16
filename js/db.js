@@ -7,19 +7,15 @@ var apexDB = (function() {
     var datastore = null;
     
     function dateTime(date) {
-    	var dateStr = date.getFullYear()
-    		+ '/'
-    		+ (date.getMonth() + 1)
-    		+ '/'
-    		+ date.getDate()
-    		+ ' '
-    		+ date.getHours()
-    		+ ':'
-    		+ date.getMinutes()
-    		+ ':'
-    		+ date.getSeconds();
-    		
-    	return dateStr;
+        options = {
+            "year":"2-digit",
+            "month":"numeric",
+            "day":"2-digit",
+            "hour":"2-digit",
+            "minute":"2-digit",
+            "second":"2-digit"
+        };
+        return date.toLocaleString("en-US", options);
     }
     
     // open a connection to hte datastore
