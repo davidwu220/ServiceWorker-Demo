@@ -28,49 +28,7 @@ window.onload = function() {
     }).catch(function(err) {
         console.log('Registration failed: ', err);
     });
-    
-    
-    // ask user permission to send notifications, then add the reg button
-    new Promise(function(resolve, reject) {
-        Notification.requestPermission(function(result) {
-            if (result !== 'granted') {
-                return reject(Error("Denied notification permission"));
-            }
 
-            resolve();
-        });
-    }).then(function() {
-        
-        // //dynamically adding a button for registering
-        // var notiDiv = document.getElementById('notiDiv');
-        // var input = document.createElement('input');
-        
-        // input.setAttribute('id', 'syncBtn');
-        // input.setAttribute('type', 'button');
-        // input.setAttribute('value', 'Register background sync!');
-        // notiDiv.appendChild(input);
-        
-        // // listen to click event
-        // document.getElementById('syncBtn').addEventListener('click', function(event) {
-        //     event.preventDefault();
-        //     // Request a sync
-        //     navigator.serviceWorker.ready.then(function(reg) {
-        //         var item = 'outbox-' + Date.now();
-        //         return reg.sync.register(item).then(function() {
-        //             // registration succeeded
-        //             var log = document.createElement('p');
-        //             log.textContent = item + ' registered!';
-        //             notiDiv.appendChild(log);
-        //         }, function() {
-        //             // registration failed
-        //             var log = document.createElement('p');
-        //             log.textContent = 'Registration failed';
-        //             notiDiv.appendChild(log);
-        //         });
-        //     });
-        // });
-    });
-    
     // ************** IndexedDB code starts here... **************
     formInputs = getFormInputs(_FIELDSTOSAVE);
     idHiddenFields(_FIELDSTOSAVE);
