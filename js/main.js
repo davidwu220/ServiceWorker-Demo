@@ -99,15 +99,7 @@ function idHiddenFields(div) {
 
 function saveAllInterval(div, interval){
     formInputs = getFormInputs(div);
-    setInterval(function(){
-        formInputs.each(function(){
-            saveInputField(this);
-        });
-
-        timeLastSaved = apexDB.timeStamp(_PREFIX + "_TIMESTAMP");
-        $('#timeLastSaved').html(timeLastSaved);
-        highlightThis('#status');
-    }, interval);
+    setInterval(SAVENOW, interval);
 }
 
 /**
