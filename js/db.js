@@ -116,10 +116,10 @@ var apexDB = (function() {
     /**
      * Generate a timestamp data object for the db.
      */
-    aDB.timeStamp = function() {
+    aDB.timeStamp = function(idKey) {
     	var timeStamp = dateTime(new Date());
     	aDB.saveFieldData({
-    		id: 'timestamp',
+    		id: idKey,
     		tagName: 'timestamp',
     		value: timeStamp
     	}, function (data) {});

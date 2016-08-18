@@ -6,6 +6,8 @@
 var _FIELDSTOSAVE = '#t_Body_content';
 var timeLastSaved = '';
 var formInputs = null;
+var pageNumRegex = new RegExp(/f\?p=\w+:(\w+):/, '');
+var _PREFIX = "P" + pageNumRegex.exec(document.URL)[1];
 
 window.onload = function() {
     if(!navigator.serviceWorker) return;
@@ -47,7 +49,7 @@ var SAVENOW = function() {
             saveInputField(this);
         });
 
-        timeLastSaved = apexDB.timeStamp();
+        timeLastSaved = apexDB.timeStamp(_PREFIX + "_TIMESTAMP");
         $('#timeLastSaved').html(timeLastSaved);
         highlightThis('#status');
     }
@@ -75,6 +77,7 @@ function CKEditorExists() {
 /**
  * Assigns ids to hidden fields that don't have one
  * within the provided div.
+ * Uses pageNumRegex to find the current APEX page.
  * @param div [String] a jQuery selector string
  */
 function idHiddenFields(div) {
@@ -82,7 +85,7 @@ function idHiddenFields(div) {
     var formInputs = getFormInputs(div);
     formInputs.each(function(){
         if(this.id == '') {
-            this.id = 'p_arg_' + index;
+            this.id = _PREFIX + '_ARG_' + index;
             index += 1;
         }
     });
@@ -101,7 +104,7 @@ function saveAllInterval(div, interval){
             saveInputField(this);
         });
 
-        timeLastSaved = apexDB.timeStamp();
+        timeLastSaved = apexDB.timeStamp(_PREFIX + "_TIMESTAMP");
         $('#timeLastSaved').html(timeLastSaved);
         highlightThis('#status');
     }, interval);
