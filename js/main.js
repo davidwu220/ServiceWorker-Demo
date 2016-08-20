@@ -37,7 +37,26 @@ window.onload = function() {
     apexDB.open(loadSavedFields);
     saveAllInterval(_FIELDSTOSAVE, 15000);
     //registerFieldListeners('#form-input');
+
+    // Check if the origin is reachable every 60 sec.
+    let uns = setInterval(function() {
+        networkTest.hostReachable(updateNetworkStatus);
+    }, 60000);
+    
+    // Add listeners to network change
+    networkTest.listenToNetworkChange(updateNetworkStatus);
 };
+
+/**
+ * Callback function for updating on/offline status text
+ */
+var updateNetworkStatus = function(status) {
+    if(status) {
+        $('#networkStatus').html('ONLINE');
+    } else {
+        $('#networkStatus').html('OFFLINE');
+    }
+}
 
 /**
  * [Public] function used by APEX page
