@@ -87,6 +87,30 @@ var apexDB = (function() {
         cursorRequest.onerror = aDB.onerror;
     };
 
+    aDB.searchFields = function(prefix, callback) {
+        var transaction = db.transaction([_STORENAME], 'readwrite');
+        var index = transaction.objectStore(_STORENAME).name("id");
+        var cursorRequest = index.openCursor();
+        var fields = [];
+
+        cursorRequest.onsuccess = function(event){
+            var result = event.target.result;
+            if (result.indexof(prefix) === 0){
+                fields.push(result.value);
+            }
+            
+            if (!!result == false) return;
+
+            result.continue();
+        }
+        
+        transaction.oncomplete = function(event) {
+            callback(inputs);
+        }
+        
+        cursorRequest.onerror = aDB.onerrror;
+    }
+
     /**
      * Save this field's id, name, and value in the IndexedDB.
      */

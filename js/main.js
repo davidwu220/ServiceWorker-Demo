@@ -33,11 +33,11 @@ window.onload = function() {
 
     // ************** IndexedDB code starts here... **************
     formInputs = getFormInputs(_FIELDSTOSAVE);
-    idHiddenFields(_FIELDSTOSAVE);
+    //idHiddenFields(_FIELDSTOSAVE);
     apexDB.open(loadSavedFields);
-    //saveAllInterval(_FIELDSTOSAVE, 15000);
+    saveAllInterval(_FIELDSTOSAVE, 15000);
     //registerFieldListeners('#form-input');
-
+    
     // Check if the origin is reachable every 60 sec.
     let uns = setInterval(function() {
         networkTest.hostReachable(updateNetworkStatus);
@@ -81,7 +81,7 @@ var APEX_SAVEALL = function() {
  */
 var APEX_SAVEFIELD = function(daobject) {
     if (daobject.browserEvent != "load") {
-        console.log(daobject.browserEvent.target);
+        highlightThis('#status');
         saveInputField(daobject.browserEvent.target);
     }
 }
@@ -152,8 +152,8 @@ function saveAllInterval(div, interval){
  * @param div [String] a jQuery selector string
  */
 function getFormInputs(div) {
-    return $(div).find( ":input" ).not( ":submit" ).not( ":reset" ).not( ":button" ).not( ":file" ).not( ":password" ).not( ":disabled" ).not( "[readonly]" );
-
+    return $(div).find( ":input" ).not("[type='hidden']").not( ":submit" ).not( ":reset" ).not( ":button" ).not( ":file" ).not( ":password" ).not( ":disabled" ).not( "[readonly]" );
+    
 }
 
 /**
