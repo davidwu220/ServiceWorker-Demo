@@ -62,7 +62,7 @@ var updateNetworkStatus = function(status) {
  * [Public] function used by APEX page
  * elements to trigger input field storage.
  */
-var SAVENOW = function() {
+var APEX_SAVEALL = function() {
     if(formInputs) {
         formInputs.each(function() {
             saveInputField(this);
@@ -118,7 +118,7 @@ function idHiddenFields(div) {
 
 function saveAllInterval(div, interval){
     formInputs = getFormInputs(div);
-    setInterval(SAVENOW, interval);
+    setInterval(APEX_SAVEALL, interval);
 }
 
 /**
