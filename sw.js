@@ -24,13 +24,13 @@ self.addEventListener('fetch', function(event) {
     var request = event.request;
 
     event.respondWith(
-        fetch(request, {cache: "no-store"}).then(function(response) {
-            return addToCache(request, response);
-        }).catch(function() {
+        fetch(request, {cache: "no-store"}).catch(function() {
             return fetchFromCache(request);
         }).catch(function(e) {
             console.error(e);
             return new Response('Oops, no cache found..');
+        }).then(function(response) {
+            return addToCache(request, response);
         })
     );
 });
