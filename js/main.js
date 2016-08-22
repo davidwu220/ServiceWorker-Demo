@@ -35,7 +35,7 @@ window.onload = function() {
     formInputs = getFormInputs(_FIELDSTOSAVE);
     idHiddenFields(_FIELDSTOSAVE);
     apexDB.open(loadSavedFields);
-    saveAllInterval(_FIELDSTOSAVE, 15000);
+    //saveAllInterval(_FIELDSTOSAVE, 15000);
     //registerFieldListeners('#form-input');
 
     // Check if the origin is reachable every 60 sec.
@@ -80,7 +80,10 @@ var APEX_SAVEALL = function() {
  * @param daobject [JS Object] an APEX dynamic action object
  */
 var APEX_SAVEFIELD = function(daobject) {
-    saveInputField(daobject.browserEvent.target);
+    if (daobject.browserEvent != "load") {
+        console.log(daobject.browserEvent.target);
+        saveInputField(daobject.browserEvent.target);
+    }
 }
 
 /**
