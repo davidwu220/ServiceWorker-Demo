@@ -75,6 +75,15 @@ var APEX_SAVEALL = function() {
 }
 
 /**
+ * [Public] function used to trigger field
+ * saves from within APEX.
+ * @param daobject [JS Object] an APEX dynamic action object
+ */
+var APEX_SAVEFIELD = function(daobject) {
+    saveInputField(daobject.browserEvent.target);
+}
+
+/**
  * Triggers the element's highlight animation.
  * @param tag [tag] an html element
  */
