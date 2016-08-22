@@ -3,7 +3,7 @@ if (typeof networkTest === 'undefined') {
 
     (function() {
         this.hostReachable = function(callback) {
-            let url = '//' + window.location.hostname;
+            let url = document.origin; //'//' + window.location.hostname;
             let status;
             
             $.ajax({
