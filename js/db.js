@@ -54,6 +54,11 @@ var apexDB = (function() {
         // Handle errors when opening the datastore
         request.onerror = aDB.onerror;
     };
+
+    aDB.clear = function() {
+        indexedDB.deleteDatabase(_DBNAME);
+        aDB.open();
+    }
     
     /**
      * Return all field data objects stored in the IndexedDB.

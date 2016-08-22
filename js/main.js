@@ -34,10 +34,9 @@ window.onload = function() {
     // ************** IndexedDB code starts here... **************
     formInputs = getFormInputs(_FIELDSTOSAVE);
     //idHiddenFields(_FIELDSTOSAVE);
-    apexDB.open(loadSavedFields);
-    saveAllInterval(_FIELDSTOSAVE, 15000);
     //registerFieldListeners('#form-input');
-    
+    //form loading and restore handled with APEX dynamic actions
+
     // Check if the origin is reachable every 60 sec.
     let uns = setInterval(function() {
         networkTest.hostReachable(updateNetworkStatus);
@@ -85,6 +84,18 @@ var APEX_SAVEFIELD = function(daobject) {
         saveInputField(daobject.browserEvent.target);
     }
 }
+
+
+var APEX_LOADALL = function() {
+    apexDB.open(loadSavedFields);
+    saveAllInterval(_FIELDSTOSAVE, 15000);
+}
+
+var APEX_DISCARDALL = function() {
+    apexDB.clear();
+    APEX_SAVEALL();
+}
+
 
 /**
  * Triggers the element's highlight animation.
