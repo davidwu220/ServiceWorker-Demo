@@ -126,14 +126,14 @@ function saveAllInterval(div, interval){
  * Currently, assigns a focusout listener for each field.
  * @param div [String] a jQuery selector string
  */
-function registerFieldListeners(div) {
-    var formInputs = getFormInputs(div);
-    console.log("registerFieldListeners: ", formInputs.toArray());
-    formInputs.each( function(){
-        var field = $(this);
-        registerSaveOnEvent(this, 'input');
-    });
-}
+//function registerFieldListeners(div) {
+    //var formInputs = getFormInputs(div);
+    //console.log("registerFieldListeners: ", formInputs.toArray());
+    //formInputs.each( function(){
+        //var field = $(this);
+        //registerSaveOnEvent(this, 'input');
+    //});
+//}
 
 /**
  * Return field inputs that we want to capture.
@@ -151,9 +151,9 @@ function getFormInputs(div) {
  * @param field [DOMObject] a field name
  * @param eventType [String] a js event type
  */
-function registerSaveOnEvent(field, eventType) {
-    $(field).on(eventType, saveInputField(field));
-}
+//function registerSaveOnEvent(field, eventType) {
+    //$(field).on(eventType, saveInputField(field));
+//}
 
 /**
  * Writes this field to apexDB.
@@ -193,7 +193,7 @@ function loadSavedFields() {
             case 'textarea':
                 if (CKEditorExists()) {
                     var editor = CKEDITOR.instances[input.id];
-                    console.log(editor);
+                    //console.log(editor);
                     if (editor){
                         editor.setData(input.value);
                         return;
