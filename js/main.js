@@ -8,6 +8,7 @@ var timeLastSaved = '';
 var formInputs = null;
 var pageNumRegex = new RegExp(/f\?p=\w+:(\w+):/, '');
 var _PREFIX = "P" + pageNumRegex.exec(document.URL)[1];
+var _MODAL_DIALOG = 'local_changes_dialog';
 
 window.onload = function() {
     if(!navigator.serviceWorker) return;
@@ -36,6 +37,7 @@ window.onload = function() {
     //idHiddenFields(_FIELDSTOSAVE);
     //registerFieldListeners('#form-input');
     //form loading and restore handled with APEX dynamic actions
+    apexDB.open(checkIfOpenDialog);
 
     // Check if the origin is reachable every 60 sec.
     let uns = setInterval(function() {
@@ -45,6 +47,35 @@ window.onload = function() {
     // Add listeners to network change
     networkTest.listenToNetworkChange(updateNetworkStatus);
 };
+
+
+/**
+ * Compares the values saved in apexDB with the values currently on the page.
+ * Calls the callback if any of the values differ, or if the DB contains no items.
+ *
+ * @param callback a function
+ */
+function checkIfOpenDialog(callback) {
+    apexDB.fetchFields(function(inputs) {
+        var cflag = true;
+        inputs.forEach(function(input,index) {
+            switch(input.tagName) {
+                case 'select':
+                case 'input':
+                case 'textarea':
+                    if (input.value != $('#' + input.id).val()) {
+                        cflag = false;
+                    }
+                    //console.log(index, input.value == $('#' + input.id).val());
+                break;
+            }
+        });
+        
+        if (!cflag) {
+            openModal(_MODAL_DIALOG);
+        }
+    });
+}
 
 /**
  * Callback function for updating on/offline status text
@@ -85,15 +116,23 @@ var APEX_SAVEFIELD = function(daobject) {
     }
 }
 
-
+/**
+ * [Public] Loads all fields from IndexedDB. Intended to be
+ * run using an APEX dynamic action, for example a
+ * button click.
+ */
 var APEX_LOADALL = function() {
     apexDB.open(loadSavedFields);
     saveAllInterval(_FIELDSTOSAVE, 15000);
 }
 
+/**
+ * [Public] Delete the current IndexedDB and any fields in
+ * it, then create a new database that holds the current
+ * field data. Intended to be run through an APEX dynamic action.
+ */
 var APEX_DISCARDALL = function() {
     apexDB.clear();
-    APEX_SAVEALL();
 }
 
 
