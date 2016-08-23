@@ -1,10 +1,10 @@
 var _VERSION = 1;
 var _DBNAME = 'drydockFields';
-var _STORENAME = 'drydockData';
+var _STORENAME = _PREFIX + '_drydockData';
 
 var apexDB = (function() {
     var aDB = {};
-    var datastore = null;
+    var database = null;
     
     /**
      * Converts a date object into a string
@@ -23,7 +23,7 @@ var apexDB = (function() {
     }
     
     /** 
-     * Open a connection to the datastore.
+     * Open a connection to the database.
      */
     aDB.open = function(callback) {
 
@@ -45,26 +45,32 @@ var apexDB = (function() {
             });
         };
         
-        // Handle successful datastore access
+        // Handle successful database access
         request.onsuccess = function(event) {
-            datastore = event.target.result;
+            database = event.target.result;
             callback();
         };
         
-        // Handle errors when opening the datastore
+        // Handle errors when opening the database
         request.onerror = aDB.onerror;
     };
 
+    /**
+     * Clears the data in the datastore _STORENAME.
+     */
     aDB.clear = function() {
-        indexedDB.deleteDatabase(_DBNAME);
-        aDB.open();
+        aDB.open(() => {
+            var transaction = database.transaction([_STORENAME], 'readwrite');
+            var objectStore = transaction.objectStore(_STORENAME);
+            var objectStoreRequest = objectStore.clear();
+        });
     }
     
     /**
      * Return all field data objects stored in the IndexedDB.
      */
     aDB.fetchFields = function(callback) {
-        var db = datastore;
+        var db = database;
         var transaction = db.transaction([_STORENAME], 'readwrite');
         var objStore = transaction.objectStore(_STORENAME);
         
@@ -73,7 +79,7 @@ var apexDB = (function() {
         
         var inputs = [];
         
-        // Triggered for each item successfully returned from the database
+        // Triggered for each item successfully returned from the datastore
         cursorRequest.onsuccess = function(event) {
             var result = event.target.result;
             
@@ -120,7 +126,7 @@ var apexDB = (function() {
      * Save this field's id, name, and value in the IndexedDB.
      */
     aDB.saveFieldData = function(field, callback) {
-        var db = datastore;
+        var db = database;
         var transaction = db.transaction([_STORENAME], 'readwrite');
         var objStore = transaction.objectStore(_STORENAME);
         
