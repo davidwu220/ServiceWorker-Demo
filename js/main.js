@@ -3,49 +3,27 @@
  * Proper attribution is left as an exercise for the maintainer.
  */
 
-var _FIELDSTOSAVE = '#t_Body_content';
-var timeLastSaved = '';
-var formInputs = null;
-var pageNumRegex = new RegExp(/f\?p=\w+:(\w+):/, '');
-var _PREFIX = "P" + pageNumRegex.exec(document.URL)[1];
-var _MODAL_DIALOG = 'local_changes_dialog';
+let TIMESTAMP = '';
+let FORM_INPUTS = null;
 
 window.onload = function() {
-    if(!navigator.serviceWorker) return;
-    
-    navigator.serviceWorker.register('../sw.js', {scope: './'}).then(function(reg) {
-        if(reg.waiting) {
-            console.log('[register-waiting] Update is ready and waiting!!');
-            return;
-        }
-        
-        if(reg.installing) {
-            trackInstalling(reg.installing);
-            return;
-        }
-        
-        reg.addEventListener('updatefound', function() {
-            trackInstalling(reg.installing);
-        });
-        
-    }).catch(function(err) {
-        console.log('Registration failed: ', err);
-    });
+    if('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('../sw.js', {scope: './'});
+    }
 
     // ************** IndexedDB code starts here... **************
-    formInputs = getFormInputs(_FIELDSTOSAVE);
-    //idHiddenFields(_FIELDSTOSAVE);
-    //registerFieldListeners('#form-input');
+    FORM_INPUTS = getFormInputs(FIELDS_TO_SAVE_ID);
+    
     //form loading and restore handled with APEX dynamic actions
     apexDB.open(checkIfOpenDialog);
 
     // Check if the origin is reachable every 60 sec.
-    let uns = setInterval(function() {
-        networkTest.hostReachable(updateNetworkStatus);
+    let uns = setInterval(() => {
+        networkTest.hostReachable(networkTest.updateNetworkStatus);
     }, 60000);
     
     // Add listeners to network change
-    networkTest.listenToNetworkChange(updateNetworkStatus);
+    networkTest.listenToNetworkChange(networkTest.updateNetworkStatus);
 };
 
 
@@ -72,20 +50,9 @@ function checkIfOpenDialog(callback) {
         });
         
         if (!cflag) {
-            openModal(_MODAL_DIALOG);
+            openModal(MODAL_DIALOG);
         }
     });
-}
-
-/**
- * Callback function for updating on/offline status text
- */
-var updateNetworkStatus = function(status) {
-    if(status) {
-        $('#networkStatus').html('ONLINE');
-    } else {
-        $('#networkStatus').html('OFFLINE');
-    }
 }
 
 /**
@@ -93,14 +60,14 @@ var updateNetworkStatus = function(status) {
  * elements to trigger input field storage.
  */
 var APEX_SAVEALL = function() {
-    if(formInputs) {
-        formInputs.each(function() {
+    if(FORM_INPUTS) {
+        FORM_INPUTS.each(function() {
             saveInputField(this);
         });
 
-        timeLastSaved = apexDB.timeStamp(_PREFIX + "_TIMESTAMP");
-        $('#timeLastSaved').html(timeLastSaved);
-        highlightThis('#status');
+        TIMESTAMP = apexDB.timeStamp(_PREFIX + "_TIMESTAMP");
+        $(TIME_LAST_SAVED_ID).html(TIMESTAMP);
+        highlightThis(HIGHLIGHT_THIS_ID);
     }
 }
 
@@ -111,7 +78,7 @@ var APEX_SAVEALL = function() {
  */
 var APEX_SAVEFIELD = function(daobject) {
     if (daobject.browserEvent != "load") {
-        highlightThis('#status');
+        highlightThis(HIGHLIGHT_THIS_ID);
         saveInputField(daobject.browserEvent.target);
     }
 }
@@ -123,7 +90,7 @@ var APEX_SAVEFIELD = function(daobject) {
  */
 var APEX_LOADALL = function() {
     apexDB.open(loadSavedFields);
-    saveAllInterval(_FIELDSTOSAVE, 15000);
+    saveAllInterval(FIELDS_TO_SAVE_ID, 15000);
 }
 
 /**
@@ -156,46 +123,15 @@ function CKEditorExists() {
 }
 
 /**
- * Assigns ids to hidden fields that don't have one
- * within the provided div.
- * Uses pageNumRegex to find the current APEX page.
- * @param div [String] a jQuery selector string
- */
-function idHiddenFields(div) {
-    var index = 0;
-    var formInputs = getFormInputs(div);
-    formInputs.each(function(){
-        if(this.id == '') {
-            this.id = _PREFIX + '_ARG_' + index;
-            index += 1;
-        }
-    });
-}
-
-/**
  * Saves all form inputs in the div on an interval.
  * @param div [String] a jQuery selector string
  * @param interval [int] in milliseconds
  */
 
 function saveAllInterval(div, interval){
-    formInputs = getFormInputs(div);
+    FORM_INPUTS = getFormInputs(div);
     setInterval(APEX_SAVEALL, interval);
 }
-
-/**
- * Register appropriate event listeners for each input field in the div.
- * Currently, assigns a focusout listener for each field.
- * @param div [String] a jQuery selector string
- */
-//function registerFieldListeners(div) {
-    //var formInputs = getFormInputs(div);
-    //console.log("registerFieldListeners: ", formInputs.toArray());
-    //formInputs.each( function(){
-        //var field = $(this);
-        //registerSaveOnEvent(this, 'input');
-    //});
-//}
 
 /**
  * Return field inputs that we want to capture.
@@ -205,17 +141,6 @@ function getFormInputs(div) {
     return $(div).find( ":input" ).not("[type='hidden']").not( ":submit" ).not( ":reset" ).not( ":button" ).not( ":file" ).not( ":password" ).not( ":disabled" ).not( "[readonly]" );
     
 }
-
-/**
- * Registers this individual field to save into apexDB when the specified
- * event type occurs.
- *
- * @param field [DOMObject] a field name
- * @param eventType [String] a js event type
- */
-//function registerSaveOnEvent(field, eventType) {
-    //$(field).on(eventType, saveInputField(field));
-//}
 
 /**
  * Writes this field to apexDB.
@@ -242,7 +167,7 @@ function loadSavedFields() {
         inputs.forEach(function(input, index) {
             switch(input.tagName) {
             case 'timestamp':
-            	$('#timeLastSaved').html(input.value);
+            	$(TIME_LAST_SAVED_ID).html(input.value);
             	break;
             case 'select':
                 if (input.value) {
@@ -268,20 +193,4 @@ function loadSavedFields() {
         });
     });
     
-}
-
-/**
- * If this serviceworker is waiting for the old
- * serviceworker to be unregistered, force a 
- * page reload.
- * @param worker [SW] a serviceworker object
- */
-function trackInstalling(worker) {
-    worker.addEventListener('statechange', function() {
-        if(worker.state == 'installed') {
-            worker.postMessage({action: 'skipWaiting'});
-            console.log('[trackInstalling] statgechagne installed. reloading...');
-            location.reload();
-        }
-    });
 }

@@ -1,7 +1,3 @@
-var _VERSION = 1;
-var _DBNAME = 'drydockFields';
-var _STORENAME = _PREFIX + '_drydockData';
-
 var apexDB = (function() {
     var aDB = {};
     var database = null;
@@ -27,7 +23,7 @@ var apexDB = (function() {
      */
     aDB.open = function(callback) {
 
-        var request = indexedDB.open(_DBNAME, _VERSION);
+        var request = indexedDB.open(_DB_NAME, _DB_VERSION);
         
         request.onupgradeneeded = function(event) {
             var db = event.target.result;
@@ -35,12 +31,12 @@ var apexDB = (function() {
             event.target.transaction.onerror = aDB.onerror;
             
             // Delete old datastores
-            if(db.objectStoreNames.contains(_STORENAME)) {
-                db.deleteObjectStore(_STORENAME);
+            if(db.objectStoreNames.contains(_STORE_NAME)) {
+                db.deleteObjectStore(_STORE_NAME);
             }
             
             // Create a new datastore
-            var store = db.createObjectStore(_STORENAME, {
+            var store = db.createObjectStore(_STORE_NAME, {
                 keyPath: 'id'
             });
         };
@@ -48,7 +44,9 @@ var apexDB = (function() {
         // Handle successful database access
         request.onsuccess = function(event) {
             database = event.target.result;
-            callback();
+            if(callback) {
+                callback();
+            }
         };
         
         // Handle errors when opening the database
@@ -56,23 +54,23 @@ var apexDB = (function() {
     };
 
     /**
-     * Clears the data in the datastore _STORENAME.
+     * Clears the data in the datastore _STORE_NAME.
      */
     aDB.clear = function() {
         aDB.open(() => {
-            var transaction = database.transaction([_STORENAME], 'readwrite');
-            var objectStore = transaction.objectStore(_STORENAME);
+            var transaction = database.transaction([_STORE_NAME], 'readwrite');
+            var objectStore = transaction.objectStore(_STORE_NAME);
             var objectStoreRequest = objectStore.clear();
         });
-    }
+    };
     
     /**
      * Return all field data objects stored in the IndexedDB.
      */
     aDB.fetchFields = function(callback) {
         var db = database;
-        var transaction = db.transaction([_STORENAME], 'readwrite');
-        var objStore = transaction.objectStore(_STORENAME);
+        var transaction = db.transaction([_STORE_NAME], 'readwrite');
+        var objStore = transaction.objectStore(_STORE_NAME);
         
         var keyRange = IDBKeyRange.lowerBound(0);
         var cursorRequest = objStore.openCursor(keyRange);
@@ -92,15 +90,17 @@ var apexDB = (function() {
         
         // Return the inputs list when transaction is completed
         transaction.oncomplete = function(event) {
-            callback(inputs);
+            if(callback) {
+                callback();
+            }
         };
         
         cursorRequest.onerror = aDB.onerror;
     };
 
     aDB.searchFields = function(prefix, callback) {
-        var transaction = db.transaction([_STORENAME], 'readwrite');
-        var index = transaction.objectStore(_STORENAME).name("id");
+        var transaction = db.transaction([_STORE_NAME], 'readwrite');
+        var index = transaction.objectStore(_STORE_NAME).name("id");
         var cursorRequest = index.openCursor();
         var fields = [];
 
@@ -116,19 +116,21 @@ var apexDB = (function() {
         }
         
         transaction.oncomplete = function(event) {
-            callback(inputs);
+            if(callback) {
+                callback();
+            }
         }
         
         cursorRequest.onerror = aDB.onerrror;
-    }
+    };
 
     /**
      * Save this field's id, name, and value in the IndexedDB.
      */
     aDB.saveFieldData = function(field, callback) {
         var db = database;
-        var transaction = db.transaction([_STORENAME], 'readwrite');
-        var objStore = transaction.objectStore(_STORENAME);
+        var transaction = db.transaction([_STORE_NAME], 'readwrite');
+        var objStore = transaction.objectStore(_STORE_NAME);
         
         // Create the data
         var data = {
@@ -141,7 +143,9 @@ var apexDB = (function() {
         var request = objStore.put(data);
 
         request.onsuccess = function(event) {
-            callback(data);
+            if(callback) {
+                callback();
+            }
         };
 
         request.onerror = aDB.onerror;
