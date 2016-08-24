@@ -17,7 +17,7 @@ var apexDB = (function() {
         };
         return date.toLocaleString("en-US", options);
     }
-    
+
     /** 
      * Open a connection to the database.
      */
@@ -29,12 +29,12 @@ var apexDB = (function() {
             var db = event.target.result;
             
             event.target.transaction.onerror = aDB.onerror;
-            
+               
             // Delete old datastores
             if(db.objectStoreNames.contains(_STORE_NAME)) {
                 db.deleteObjectStore(_STORE_NAME);
             }
-            
+           
             // Create a new datastore
             var store = db.createObjectStore(_STORE_NAME, {
                 keyPath: 'id'
@@ -91,7 +91,7 @@ var apexDB = (function() {
         // Return the inputs list when transaction is completed
         transaction.oncomplete = function(event) {
             if(callback) {
-                callback();
+                callback(inputs);
             }
         };
         

@@ -3,6 +3,8 @@
  * Proper attribution is left as an exercise for the maintainer.
  */
 
+// Important! Field saving will not run if PRIMARY_KEY_FIELD_ID is not set!
+
 let TIMESTAMP = '';
 let FORM_INPUTS = null;
 
@@ -12,18 +14,21 @@ window.onload = function() {
     }
 
     // ************** IndexedDB code starts here... **************
-    FORM_INPUTS = getFormInputs(FIELDS_TO_SAVE_ID);
-    
-    //form loading and restore handled with APEX dynamic actions
-    apexDB.open(checkIfOpenDialog);
+    if (typeof(PRIMARY_KEY_FIELD_ID) != 'undefined') {
+        _DB_NAME = _PREFIX + '_drydockFields_' + $("#" + PRIMARY_KEY_FIELD_ID).val();
+        FORM_INPUTS = getFormInputs(FIELDS_TO_SAVE_ID);
 
-    // Check if the origin is reachable every 60 sec.
-    let uns = setInterval(() => {
-        networkTest.hostReachable(networkTest.updateNetworkStatus);
-    }, 60000);
-    
-    // Add listeners to network change
-    networkTest.listenToNetworkChange(networkTest.updateNetworkStatus);
+        //form loading and restore
+        apexDB.open(checkIfOpenDialog);
+
+        // Check if the origin is reachable every 60 sec.
+        let uns = setInterval(() => {
+            networkTest.hostReachable(networkTest.updateNetworkStatus);
+        }, 60000);
+        
+        // Add listeners to network change
+        networkTest.listenToNetworkChange(networkTest.updateNetworkStatus);
+    }
 };
 
 
@@ -50,7 +55,7 @@ function checkIfOpenDialog(callback) {
         });
         
         if (!cflag) {
-            openModal(MODAL_DIALOG);
+            openModal(MODAL_DIALOG_ID);
         }
     });
 }
