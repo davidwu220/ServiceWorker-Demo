@@ -10,18 +10,6 @@
  * the global bariables need to be declaired in sw.js.
  **/
 
-// Service Worker global variables
-
-
-// IndexedDB global variables
-// Public
-
-// Private
-var _DB_VERSION = 1;
-var _DB_NAME = 'drydockFields';
-var _STORE_NAME = PREFIX + '_drydockData';
-
-
 // main.js global variables
 // Public
 var FIELDS_TO_SAVE_ID = '#t_Body_content';
@@ -33,3 +21,16 @@ var MODAL_DIALOG = 'local_changes_dialog';
 var _NETWORK_STATUS_ID = '#networkStatus';
 let _pageNumRegex = new RegExp(/f\?p=\w+:(\w+):/, '');
 var _PREFIX = "P" + _pageNumRegex.exec(document.URL)[1];
+
+// Service Worker global variables
+
+
+// IndexedDB global variables
+// Public
+
+// Private
+var _DB_VERSION = 1;
+var _DB_NAME = 'drydockFields';
+var _STORE_NAME = _PREFIX + '_drydockData';
+
+

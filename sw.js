@@ -17,7 +17,6 @@ self.addEventListener('install', function(event) {
             .then(() => self.skipWaiting())
             .then(() => {
                 console.log('[install] New service worker installed. reloading...');
-                location.reload();
             })
     );
 });
@@ -35,13 +34,13 @@ self.addEventListener('fetch', function(event) {
     var request = event.request;
 
     event.respondWith(
-        fetch(request, {cache: "no-store"}).catch(function() {
+        fetch(request, {cache: "no-store"}).then(function(response) {
+            return addToCache(request, response);
+        }).catch(function() {
             return fetchFromCache(request);
         }).catch(function(e) {
             console.error(e);
             return new Response('Oops, no cache found..');
-        }).then(function(response) {
-            return addToCache(request, response);
         })
     );
 });
