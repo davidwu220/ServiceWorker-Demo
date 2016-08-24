@@ -6,6 +6,9 @@
 var _FIELDSTOSAVE = '#t_Body_content';
 var timeLastSaved = '';
 var formInputs = null;
+var pageNumRegex = new RegExp(/f\?p=\w+:(\w+):/, '');
+var _PREFIX = "P" + pageNumRegex.exec(document.URL)[1];
+var _MODAL_DIALOG = 'local_changes_dialog';
 
 window.onload = function() {
     if(!navigator.serviceWorker) return;
@@ -31,27 +34,107 @@ window.onload = function() {
 
     // ************** IndexedDB code starts here... **************
     formInputs = getFormInputs(_FIELDSTOSAVE);
-    idHiddenFields(_FIELDSTOSAVE);
-    apexDB.open(loadSavedFields);
-    saveAllInterval(_FIELDSTOSAVE, 15000);
+    //idHiddenFields(_FIELDSTOSAVE);
     //registerFieldListeners('#form-input');
+    //form loading and restore handled with APEX dynamic actions
+    apexDB.open(checkIfOpenDialog);
+
+    // Check if the origin is reachable every 60 sec.
+    let uns = setInterval(function() {
+        networkTest.hostReachable(updateNetworkStatus);
+    }, 60000);
+    
+    // Add listeners to network change
+    networkTest.listenToNetworkChange(updateNetworkStatus);
 };
+
+
+/**
+ * Compares the values saved in apexDB with the values currently on the page.
+ * Calls the callback if any of the values differ, or if the DB contains no items.
+ *
+ * @param callback a function
+ */
+function checkIfOpenDialog(callback) {
+    apexDB.fetchFields(function(inputs) {
+        var cflag = true;
+        inputs.forEach(function(input,index) {
+            switch(input.tagName) {
+                case 'select':
+                case 'input':
+                case 'textarea':
+                    if (input.value != $('#' + input.id).val()) {
+                        cflag = false;
+                    }
+                    //console.log(index, input.value == $('#' + input.id).val());
+                break;
+            }
+        });
+        
+        if (!cflag) {
+            openModal(_MODAL_DIALOG);
+        }
+    });
+}
+
+/**
+ * Callback function for updating on/offline status text
+ */
+var updateNetworkStatus = function(status) {
+    if(status) {
+        $('#networkStatus').html('ONLINE');
+    } else {
+        $('#networkStatus').html('OFFLINE');
+    }
+}
 
 /**
  * [Public] function used by APEX page
  * elements to trigger input field storage.
  */
-var SAVENOW = function() {
+var APEX_SAVEALL = function() {
     if(formInputs) {
         formInputs.each(function() {
             saveInputField(this);
         });
 
-        timeLastSaved = apexDB.timeStamp();
+        timeLastSaved = apexDB.timeStamp(_PREFIX + "_TIMESTAMP");
         $('#timeLastSaved').html(timeLastSaved);
         highlightThis('#status');
     }
 }
+
+/**
+ * [Public] function used to trigger field
+ * saves from within APEX.
+ * @param daobject [JS Object] an APEX dynamic action object
+ */
+var APEX_SAVEFIELD = function(daobject) {
+    if (daobject.browserEvent != "load") {
+        highlightThis('#status');
+        saveInputField(daobject.browserEvent.target);
+    }
+}
+
+/**
+ * [Public] Loads all fields from IndexedDB. Intended to be
+ * run using an APEX dynamic action, for example a
+ * button click.
+ */
+var APEX_LOADALL = function() {
+    apexDB.open(loadSavedFields);
+    saveAllInterval(_FIELDSTOSAVE, 15000);
+}
+
+/**
+ * [Public] Delete the current IndexedDB and any fields in
+ * it, then create a new database that holds the current
+ * field data. Intended to be run through an APEX dynamic action.
+ */
+var APEX_DISCARDALL = function() {
+    apexDB.clear();
+}
+
 
 /**
  * Triggers the element's highlight animation.
@@ -75,6 +158,7 @@ function CKEditorExists() {
 /**
  * Assigns ids to hidden fields that don't have one
  * within the provided div.
+ * Uses pageNumRegex to find the current APEX page.
  * @param div [String] a jQuery selector string
  */
 function idHiddenFields(div) {
@@ -82,7 +166,7 @@ function idHiddenFields(div) {
     var formInputs = getFormInputs(div);
     formInputs.each(function(){
         if(this.id == '') {
-            this.id = 'p_arg_' + index;
+            this.id = _PREFIX + '_ARG_' + index;
             index += 1;
         }
     });
@@ -96,15 +180,7 @@ function idHiddenFields(div) {
 
 function saveAllInterval(div, interval){
     formInputs = getFormInputs(div);
-    setInterval(function(){
-        formInputs.each(function(){
-            saveInputField(this);
-        });
-
-        timeLastSaved = apexDB.timeStamp();
-        $('#timeLastSaved').html(timeLastSaved);
-        highlightThis('#status');
-    }, interval);
+    setInterval(APEX_SAVEALL, interval);
 }
 
 /**
@@ -112,22 +188,22 @@ function saveAllInterval(div, interval){
  * Currently, assigns a focusout listener for each field.
  * @param div [String] a jQuery selector string
  */
-function registerFieldListeners(div) {
-    var formInputs = getFormInputs(div);
-    console.log("registerFieldListeners: ", formInputs.toArray());
-    formInputs.each( function(){
-        var field = $(this);
-        registerSaveOnEvent(this, 'input');
-    });
-}
+//function registerFieldListeners(div) {
+    //var formInputs = getFormInputs(div);
+    //console.log("registerFieldListeners: ", formInputs.toArray());
+    //formInputs.each( function(){
+        //var field = $(this);
+        //registerSaveOnEvent(this, 'input');
+    //});
+//}
 
 /**
  * Return field inputs that we want to capture.
  * @param div [String] a jQuery selector string
  */
 function getFormInputs(div) {
-    return $(div).find( ":input" ).not( ":submit" ).not( ":reset" ).not( ":button" ).not( ":file" ).not( ":password" ).not( ":disabled" ).not( "[readonly]" );
-
+    return $(div).find( ":input" ).not("[type='hidden']").not( ":submit" ).not( ":reset" ).not( ":button" ).not( ":file" ).not( ":password" ).not( ":disabled" ).not( "[readonly]" );
+    
 }
 
 /**
@@ -137,9 +213,9 @@ function getFormInputs(div) {
  * @param field [DOMObject] a field name
  * @param eventType [String] a js event type
  */
-function registerSaveOnEvent(field, eventType) {
-    $(field).on(eventType, saveInputField(field));
-}
+//function registerSaveOnEvent(field, eventType) {
+    //$(field).on(eventType, saveInputField(field));
+//}
 
 /**
  * Writes this field to apexDB.
@@ -179,7 +255,7 @@ function loadSavedFields() {
             case 'textarea':
                 if (CKEditorExists()) {
                     var editor = CKEDITOR.instances[input.id];
-                    console.log(editor);
+                    //console.log(editor);
                     if (editor){
                         editor.setData(input.value);
                         return;
