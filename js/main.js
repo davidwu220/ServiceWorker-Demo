@@ -10,7 +10,20 @@ let FORM_INPUTS = null;
 
 window.onload = function() {
     if('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('../sw.js', {scope: './'});
+        navigator.serviceWorker.register('../sw.js', {scope: './'})
+            .then(reg => {
+                if(reg.installing) {
+                    trackInstalling(reg.installing);
+                    return;
+                }
+                
+                reg.addEventListener('updatefound', function() {
+                    trackInstalling(reg.installing);
+                });
+                    
+            }).catch(function(err) {
+                console.log('Registration failed: ', err);
+            });
     }
 
     // ************** IndexedDB code starts here... **************
@@ -31,6 +44,21 @@ window.onload = function() {
     }
 };
 
+/**
+ * If this serviceworker is waiting for the old
+ * serviceworker to be unregistered, force a 
+ * page reload.
+ * @param worker [SW] a serviceworker object
+ */
+function trackInstalling(worker) {
+    worker.addEventListener('statechange', function() {
+        if(worker.state == 'installed') {
+            worker.postMessage({action: 'skipWaiting'});
+            console.log('[trackInstalling] New service worker installed. Reloading...');
+            location.reload();
+        }
+    });
+}
 
 /**
  * Compares the values saved in apexDB with the values currently on the page.

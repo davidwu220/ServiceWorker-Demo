@@ -7,17 +7,10 @@ let _URL_REGEXP = new RegExp(/https:\/\/\S+\/ords\/f\?p=\d+:\d+/, '');
  * On install, cache everything in the variable _CACHE_THESE.
  */
 self.addEventListener('install', function(event) {
-    function onInstall(event, cacheName, cacheThis) {
-        return caches.open(cacheName)
-            .then(cache => cache.addAll(cacheThis));
-    }
-    
     event.waitUntil(
-        onInstall(event, _CACHE_NAME, _CACHE_THESE)
+        caches.open(_CACHE_NAME)
+            .then(cache => cache.addAll(_CACHE_THESE))
             .then(() => self.skipWaiting())
-            .then(() => {
-                console.log('[install] New service worker installed. reloading...');
-            })
     );
 });
 
