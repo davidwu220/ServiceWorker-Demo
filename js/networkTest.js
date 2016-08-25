@@ -2,6 +2,18 @@ if (typeof networkTest === 'undefined') {
     var networkTest = {};
 
     (function() {
+        function toggleDisabled(arr) {
+            function disableThis(element, index, array) {
+                if($(element).prop('disabled')) {
+                    $(element).prop('disabled', false);
+                } else {
+                    $(element).prop('disabled', true);
+                }
+            }
+
+            arr.forEach(disableThis);
+        }
+        
         /**
          * Check if the origin is still reachable
          **/
@@ -55,6 +67,7 @@ if (typeof networkTest === 'undefined') {
             } else {
                 $(_NETWORK_STATUS_ID).html('OFFLINE');
             }
+            toggleDisabled(DISABLE_THESE_ID);
         };
 
     }).call(networkTest);
