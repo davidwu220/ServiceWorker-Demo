@@ -7,6 +7,7 @@
 
 let TIMESTAMP = '';
 let FORM_INPUTS = null;
+let SAVE_INTERVAL = 5000;
 
 window.onload = function() {
     // ************** ServiceWorker code starts here... **************
@@ -53,7 +54,10 @@ function checkIfOpenDialog(callback) {
             }
         });
         
-        if (!cflag) {
+        if (cflag) {
+            saveAllInterval(FIELDS_TO_SAVE_ID, SAVE_INTERVAL);
+        } else {
+        
             openModal(MODAL_DIALOG_ID);
         }
     });
@@ -94,7 +98,7 @@ var APEX_SAVEFIELD = function(daobject) {
  */
 var APEX_LOADALL = function() {
     apexDB.open(loadSavedFields);
-    saveAllInterval(FIELDS_TO_SAVE_ID, 15000);
+    saveAllInterval(FIELDS_TO_SAVE_ID, SAVE_INTERVAL);
 }
 
 /**
@@ -104,6 +108,7 @@ var APEX_LOADALL = function() {
  */
 var APEX_DISCARDALL = function() {
     apexDB.clear();
+    saveAllInterval(FIELDS_TO_SAVE_ID, SAVE_INTERVAL);
 }
 
 
