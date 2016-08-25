@@ -9,23 +9,9 @@ let TIMESTAMP = '';
 let FORM_INPUTS = null;
 
 window.onload = function() {
-    if('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('../sw.js', {scope: './'})
-            .then(reg => {
-                if(reg.installing) {
-                    trackInstalling(reg.installing);
-                    return;
-                }
-                
-                reg.addEventListener('updatefound', function() {
-                    trackInstalling(reg.installing);
-                });
-                    
-            }).catch(function(err) {
-                console.log('Registration failed: ', err);
-            });
-    }
-
+    // ************** ServiceWorker code starts here... **************
+    swHelper.register();
+    
     // ************** IndexedDB code starts here... **************
     if (typeof(PRIMARY_KEY_FIELD_ID) != 'undefined') {
         _DB_NAME = _PREFIX + '_drydockFields_' + $("#" + PRIMARY_KEY_FIELD_ID).val();
@@ -35,6 +21,7 @@ window.onload = function() {
         apexDB.open(checkIfOpenDialog);
 
         // Check if the origin is reachable every 60 sec.
+        networkTest.hostReachable(networkTest.updateNetworkStatus);
         let uns = setInterval(() => {
             networkTest.hostReachable(networkTest.updateNetworkStatus);
         }, 60000);
@@ -43,22 +30,6 @@ window.onload = function() {
         networkTest.listenToNetworkChange(networkTest.updateNetworkStatus);
     }
 };
-
-/**
- * If this serviceworker is waiting for the old
- * serviceworker to be unregistered, force a 
- * page reload.
- * @param worker [SW] a serviceworker object
- */
-function trackInstalling(worker) {
-    worker.addEventListener('statechange', function() {
-        if(worker.state == 'installed') {
-            worker.postMessage({action: 'skipWaiting'});
-            console.log('[trackInstalling] New service worker installed. Reloading...');
-            location.reload();
-        }
-    });
-}
 
 /**
  * Compares the values saved in apexDB with the values currently on the page.
