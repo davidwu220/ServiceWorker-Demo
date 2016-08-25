@@ -1,5 +1,7 @@
-let _SW_VERSION = 1;
-let _CACHE_NAME = 'drydock_sw_v' + _SW_VERSION;
+
+
+var _SW_VERSION = 1;
+var _CACHE_NAME = 'drydock_sw_v' + _SW_VERSION;
 let _CACHE_THESE = [];
 let _URL_REGEXP = new RegExp(/https:\/\/\S+\/ords\/f\?p=\d+:\d+/, '');
 
