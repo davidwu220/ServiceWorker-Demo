@@ -17,10 +17,8 @@
 var FIELDS_TO_SAVE_ID = '#t_Body_content';
 var HIGHLIGHT_THIS_ID = '#status';
 var TIME_LAST_SAVED_ID = '#timeLastSaved';
-var DISABLE_THESE_ID = [
-    '#a',
-    '#b'
-];
+// Important: set DISABLE_THESE_ID per page!
+
 //jQuery UI seems to be a bit different than the rest of JQuery - omit # before tag
 var MODAL_DIALOG_ID = 'local_changes_dialog';
 
