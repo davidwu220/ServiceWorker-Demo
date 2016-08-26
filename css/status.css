@@ -1,0 +1,21 @@
+.willHighlight {
+	padding: 2px 6px;
+	display: inline-block;
+	border-radius: 3px;
+	font-weight: bold;
+	font-size: 11pt;
+	color: #404040;
+}
+
+.highlight {
+	color: whitesmoke;
+	background-color: #4AA4EC;
+}
+
+.status.highlight.ok {
+	background-color: #24CB7F;
+}
+
+.status.highlight.bad {
+	background-color: #FA5540;
+}
