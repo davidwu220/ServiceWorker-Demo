@@ -138,7 +138,6 @@ function CKEditorExists() {
 
 function saveAllInterval(div, interval){
     FORM_INPUTS = getFormInputs(div);
-    APEX_SAVEALL();
     setInterval(APEX_SAVEALL, interval);
 }
 
