@@ -2,16 +2,19 @@ if (typeof networkTest === 'undefined') {
     var networkTest = {};
 
     (function() {
-        function toggleDisabled(arr) {
+        function setDisabled(arr) {
             function disableThis(element, index, array) {
-                if($(element).prop('disabled')) {
-                    $(element).prop('disabled', false);
-                } else {
-                    $(element).prop('disabled', true);
-                }
+                 $(element).prop('disabled', true);
             }
 
             arr.forEach(disableThis);
+        }
+        
+        function setEnabled(arr) {
+            function enableThis(element, index, array) {
+                $(element).prop('disabled', false);
+            }
+            arr.forEach(enableThis);
         }
         
         /**
@@ -64,10 +67,11 @@ if (typeof networkTest === 'undefined') {
         this.updateNetworkStatus = function(status) {
             if(status) {
                 $(_NETWORK_STATUS_ID).html('ONLINE');
+		setEnabled(DISABLE_THESE_ID);
             } else {
                 $(_NETWORK_STATUS_ID).html('OFFLINE');
+		setDisabled(DISABLE_THESE_ID);
             }
-            toggleDisabled(DISABLE_THESE_ID);
         };
 
     }).call(networkTest);
