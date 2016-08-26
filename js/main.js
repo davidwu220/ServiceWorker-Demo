@@ -7,7 +7,6 @@
 
 let TIMESTAMP = '';
 let FORM_INPUTS = null;
-let SAVE_INTERVAL = 5000;
 
 window.onload = function() {
     // ************** ServiceWorker code starts here... **************
@@ -25,7 +24,7 @@ window.onload = function() {
         networkTest.hostReachable(networkTest.updateNetworkStatus);
         let uns = setInterval(() => {
             networkTest.hostReachable(networkTest.updateNetworkStatus);
-        }, 60000);
+        }, _NETWORK_CHECK_INTERVAL);
         
         // Add listeners to network change
         networkTest.listenToNetworkChange(networkTest.updateNetworkStatus);
@@ -55,7 +54,7 @@ function checkIfOpenDialog(callback) {
         });
         
         if (cflag) {
-            saveAllInterval(FIELDS_TO_SAVE_ID, SAVE_INTERVAL);
+            saveAllInterval(FIELDS_TO_SAVE_ID, _SAVE_INTERVAL);
         } else {
         
             openModal(MODAL_DIALOG_ID);
@@ -75,7 +74,7 @@ var APEX_SAVEALL = function() {
 
         TIMESTAMP = apexDB.timeStamp(_PREFIX + "_TIMESTAMP");
         $(TIME_LAST_SAVED_ID).html(TIMESTAMP);
-        highlightThis(HIGHLIGHT_THIS_ID);
+        highlightThis(TIME_LAST_SAVED_ID);
     }
 }
 
@@ -86,7 +85,7 @@ var APEX_SAVEALL = function() {
  */
 var APEX_SAVEFIELD = function(daobject) {
     if (daobject.browserEvent != "load") {
-        highlightThis(HIGHLIGHT_THIS_ID);
+        highlightThis(TIME_LAST_SAVED_ID);
         saveInputField(daobject.browserEvent.target);
     }
 }
@@ -98,7 +97,7 @@ var APEX_SAVEFIELD = function(daobject) {
  */
 var APEX_LOADALL = function() {
     apexDB.open(loadSavedFields);
-    saveAllInterval(FIELDS_TO_SAVE_ID, SAVE_INTERVAL);
+    saveAllInterval(FIELDS_TO_SAVE_ID, _SAVE_INTERVAL);
 }
 
 /**
@@ -108,7 +107,7 @@ var APEX_LOADALL = function() {
  */
 var APEX_DISCARDALL = function() {
     apexDB.clear();
-    saveAllInterval(FIELDS_TO_SAVE_ID, SAVE_INTERVAL);
+    saveAllInterval(FIELDS_TO_SAVE_ID, _SAVE_INTERVAL);
 }
 
 
@@ -139,6 +138,7 @@ function CKEditorExists() {
 
 function saveAllInterval(div, interval){
     FORM_INPUTS = getFormInputs(div);
+    APEX_SAVEALL();
     setInterval(APEX_SAVEALL, interval);
 }
 
@@ -164,7 +164,7 @@ function saveInputField(field) {
             field.value = editor.getData();
         }
     }
-    apexDB.saveFieldData(field, function(data) {});
+    apexDB.saveFieldData(field);
 }
 
 /**

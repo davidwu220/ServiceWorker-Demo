@@ -21,7 +21,7 @@ if (typeof networkTest === 'undefined') {
          * Check if the origin is still reachable
          **/
         this.hostReachable = function(callback) {
-            let url = document.origin; //'//' + window.location.hostname;
+            let url = document.origin;
             let status;
             
             $.ajax({
@@ -66,11 +66,11 @@ if (typeof networkTest === 'undefined') {
          **/
         this.updateNetworkStatus = function(status) {
             if(status) {
-                $(_NETWORK_STATUS_ID).html('ONLINE');
-		setEnabled(DISABLE_THESE_ID);
+                $(_NETWORK_STATUS_ID).html('ONLINE').removeClass('bad').addClass('ok');
+		setEnabled(DISABLE_THESE);
             } else {
-                $(_NETWORK_STATUS_ID).html('OFFLINE');
-		setDisabled(DISABLE_THESE_ID);
+                $(_NETWORK_STATUS_ID).html('OFFLINE').removeClass('ok').addClass('bad');
+		setDisabled(DISABLE_THESE);
             }
         };
 
