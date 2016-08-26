@@ -127,13 +127,11 @@ editing a page’s or template’s properties - one line per file.
 
 Template:
 
-![Referencing Template](media/referencing_template.png){width="3.839583333333333in"
-height="3.3229166666666665in"}
+<img alt="Referencing Template" src="media/referencing_template.png" width="3.84in" height="3.32in">
 
 Page:
 
-![Referencing Page](media/referencing_page.png){width="2.7708333333333335in"
-height="3.2847222222222223in"}
+<img alt="Referencing Page" src="media/referencing_page.png" width="2.77in" height="3.28in">
 
 For files uploaded to the filesystem, use these:
 ```
@@ -251,7 +249,7 @@ be controlled by changing the `_NETWORK_CHECK_INTERVAL` variable in
 is offline; appropriate jQuery selectors for these elements must be
 placed in an array global variable called `DISABLE_THESE` for each page.
 
-![Function and Global Variable Declaration](media/function_and_global_variable_declaration.png){width="4.510416666666667in" height="1.09375in"}
+<img alt="Function and Global Variable Declaration" src="media/function_and_global_variable_declaration.png" width="4.51in" height="1.1in">
 
 Change dynamic action
 ---------------------
@@ -265,10 +263,9 @@ likely the content body, `.t-Body-contentInner`. The associated action
 should affect only the `event source`; it should execute
 `APEX_SAVEFIELD(this)` as JavaScript.
 
-![Change Dynamic Action 1](media/change_dynamic_action_1.png){width="3.5748162729658794in"
-height="3.7604166666666665in"}
-![Change Dynamic Action 2](media/change_dynamic_action_2.png){width="3.5686723534558182in"
-height="2.6041666666666665in"}
+<img alt="Change Dynamic Action 1" src="media/change_dynamic_action_1.png" width="3.57in" height="3.76in">
+
+<img alt="Change Dynamic Action 2" src="media/change_dynamic_action_2.png" width="3.57in" height="2.6in">
 
 Field-based Database Name
 -------------------------
